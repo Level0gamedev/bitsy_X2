@@ -13,12 +13,12 @@ var DialogRenderer = function() {
 	// TODO : refactor this eventually? remove everything from struct.. avoid the defaults?
 	var textboxInfo = {
 		img : null,
-		width : 104,
-		height : 8+4+2+5, //8 for text, 4 for top-bottom padding, 2 for line padding, 5 for arrow
+		width : 232,
+		height : (8+4+2) +5, //8 for text, 4 for top-bottom padding, 2 for line padding, 5 for arrow,
 		top : 12,
 		left : 12,
 		bottom : 12, //for drawing it from the bottom
-		font_scale : 0.5, // we draw font at half-size compared to everything else
+		font_scale : 1, // we draw font at half-size compared to everything else
 		padding_vert : 2,
 		padding_horz : 4,
 		arrow_height : 5,
@@ -161,7 +161,7 @@ var DialogRenderer = function() {
 
 			}
 		}
-		
+
 		// call printHandler for character
 		char.OnPrint();
 	};
@@ -534,7 +534,7 @@ var DialogBuffer = function() {
 		if( lastPage.length == 0 )
 			buffer.splice( buffer.length-1, 1 );
 
-		//finish up 
+		//finish up
 		lastPage = buffer[ buffer.length-1 ];
 		lastRow = lastPage[ lastPage.length-1 ];
 		if( lastRow.length > 0 ) {
