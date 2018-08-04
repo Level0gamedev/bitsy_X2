@@ -70,7 +70,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 		var paintExplorerForm = document.getElementById(idPrefix + "FormInner");
 		if( !doKeepOldThumbnails )
 			paintExplorerForm.innerHTML = "";
-		
+
 		for(var i = 0; i < idList.length; i++) {
 			var id = idList[i];
 			if(id != "A" || drawingCategory == TileType.Avatar)
@@ -249,8 +249,8 @@ function PaintExplorer(idPrefix,selectCallback) {
 function ThumbnailRenderer() {
 	var drawingThumbnailCanvas, drawingThumbnailCtx;
 	drawingThumbnailCanvas = document.createElement("canvas");
-	drawingThumbnailCanvas.width = 8 * scale; // TODO: scale constants need to be contained somewhere
-	drawingThumbnailCanvas.height = 8 * scale;
+	drawingThumbnailCanvas.width = tilesize * scale/2; // TODO: scale constants need to be contained somewhere
+	drawingThumbnailCanvas.height = tilesize * scale/2;
 	drawingThumbnailCtx = drawingThumbnailCanvas.getContext("2d");
 
 	var thumbnailRenderEncoders = {};
@@ -274,18 +274,18 @@ function ThumbnailRenderer() {
 
 		if( isAnimated || frameIndex == 0 ) {
 			drawingId.draw( drawingThumbnailCtx, 0, 0, palId, 0 /*frameIndex*/ );
-			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,8*scale,8*scale).data );
+			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,tilesize*scale,tilesize*scale).data );
 		}
 		if( isAnimated || frameIndex == 1 ) {
 			drawingId.draw( drawingThumbnailCtx, 0, 0, palId, 1 /*frameIndex*/ );
-			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,8*scale,8*scale).data );
+			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,tilesize*scale,tilesize*scale).data );
 		}
 
 		// create encoder
 		var gifData = {
 			frames: drawingFrameData,
-			width: 8*scale,
-			height: 8*scale,
+			width: tilesize*scale,
+			height: tilesize*scale,
 			palette: hexPalette,
 			loops: 0,
 			delay: animationTime / 10 // TODO why divide by 10???
