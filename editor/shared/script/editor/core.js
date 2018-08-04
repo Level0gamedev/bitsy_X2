@@ -1,5 +1,5 @@
-/* 
-	CORE 
+/*
+	CORE
 */
 
 /* MODES */
@@ -197,14 +197,22 @@ function makeItem(id,imageData) { // NOTE : same as tile right now? make more li
 function makeDrawing(id,imageData) {
 	if (!imageData) {
 		imageData = [[
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		]];
 	}
 	imageStore.source[id] = imageData;
@@ -258,7 +266,7 @@ function tileTypeToIdPrefix(type) {
 		return "ITM_";
 }
 
-/* DIALOG UI 
+/* DIALOG UI
 - needs a better home
 	- into paint object?
 	- needs its own controller?
@@ -293,7 +301,7 @@ function reloadDialogUICore() { // TODO: name is terrible
 	}
 	else {
 		document.getElementById("dialogText").value = "";
-	}	
+	}
 }
 
 // hacky - assumes global paintTool object
@@ -335,7 +343,7 @@ function on_change_dialog() {
 
 /* PALETTE TOOL STUFF
 TODO:
-- move into its own file 
+- move into its own file
 - is PaletteTool the best name?
 - should it create its own color picker?
 */

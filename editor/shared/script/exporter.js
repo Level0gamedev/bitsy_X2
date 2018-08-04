@@ -92,7 +92,7 @@ this.importGame = function( html ) {
 		gameDataStr = gameDataStr.replace(/\\n/g, "\n"); //todo: move this into the method below
 		gameDataStr = unescapeSpecialCharacters( gameDataStr );
 
-		return gameDataStr;		
+		return gameDataStr;
 	}
 
 	// IMPORT : new style
