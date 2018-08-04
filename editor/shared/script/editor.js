@@ -544,11 +544,11 @@ function start() {
 
 
 	//load last auto-save
-	if (localStorage.game_data) {
+	if (localStorage.bitsy_x2_data) {
 		//console.log("~~~ found old save data! ~~~");
-		//console.log(localStorage.game_data);
-		document.getElementById("game_data").value = localStorage.game_data;
-		on_game_data_change_core();
+		//console.log(localStorage.bitsy_x2_data);
+		document.getElementById("bitsy_x2_data").value = localStorage.bitsy_x2_data;
+		on_bitsy_x2_data_change_core();
 	}
 	else {
 		//console.log("~~~~ no old save data! ~~~~");
@@ -1388,7 +1388,7 @@ function on_edit_mode() {
 	isPlayMode = false;
 	stopGame();
 	// TODO I should really do more to separate the editor's game-data from the engine's game-data
-	parseWorld(document.getElementById("game_data").value); //reparse world to account for any changes during gameplay
+	parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world to account for any changes during gameplay
 	curRoom = sortedRoomIdList()[roomIndex]; //restore current room to pre-play state
 	roomTool.drawEditMap();
 
@@ -1409,7 +1409,7 @@ function on_edit_mode() {
 
 // hacky - part of hiding font data from the game data
 function getFullGameData() {
-	// return document.getElementById("game_data").value + fontManager.GetData(fontName);
+	// return document.getElementById("bitsy_x2_data").value + fontManager.GetData(fontName);
 	return serializeWorld();
 }
 
@@ -1418,7 +1418,7 @@ function on_play_mode() {
 
 	roomTool.unlistenEditEvents();
 
-	// load_game(document.getElementById("game_data").value, !isPreviewDialogMode /* startWithTitle */);
+	// load_game(document.getElementById("bitsy_x2_data").value, !isPreviewDialogMode /* startWithTitle */);
 	load_game(getFullGameData(), !isPreviewDialogMode /* startWithTitle */);
 
 	console.log("PLAY!! ~~ PREVIEW ? " + isPreviewDialogMode);
@@ -1826,8 +1826,8 @@ function on_change_adv_dialog() {
 	on_change_dialog();
 }
 
-function on_game_data_change() {
-	on_game_data_change_core();
+function on_bitsy_x2_data_change() {
+	on_bitsy_x2_data_change_core();
 	refreshGameData();
 
 	// ui stuff
@@ -1883,9 +1883,9 @@ function convertGameDataToCurVersion(importVersion) {
 	}
 }
 
-function on_game_data_change_core() {
+function on_bitsy_x2_data_change_core() {
 	clearGameData();
-	var version = parseWorld(document.getElementById("game_data").value); //reparse world if user directly manipulates game data
+	var version = parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world if user directly manipulates game data
 
 	convertGameDataToCurVersion(version);
 
@@ -2053,7 +2053,7 @@ function filenameFromGameTitle() {
 
 function exportGame() {
 	refreshGameData(); //just in case
-	// var gameData = document.getElementById("game_data").value; //grab game data
+	// var gameData = document.getElementById("bitsy_x2_data").value; //grab game data
 	var gameData = getFullGameData();
 	var size = document.getElementById("exportSizeFixedInput").value;
 	exporter.exportGame( gameData, title, export_settings.page_color, filenameFromGameTitle() + ".html", isFixedSize, size ); //download as html file
@@ -2061,7 +2061,7 @@ function exportGame() {
 
 function exportGameData() {
 	refreshGameData(); //just in case
-	// var gameData = document.getElementById("game_data").value; //grab game data
+	// var gameData = document.getElementById("bitsy_x2_data").value; //grab game data
 	var gameData = getFullGameData();
 	ExporterUtils.DownloadFile( filenameFromGameTitle() + ".bitsy", gameData );
 }
@@ -2569,8 +2569,8 @@ function importGameFromFile(e) {
 		gameDataStr = exporter.importGame( fileText );
 
 		// change game data & reload everything
-		document.getElementById("game_data").value = gameDataStr;
-		on_game_data_change();
+		document.getElementById("bitsy_x2_data").value = gameDataStr;
+		on_bitsy_x2_data_change();
 	}
 }
 
@@ -4257,7 +4257,7 @@ function showInventoryVariable() {
 // 	on_play_mode();
 // 	updatePlayModeButton();
 // 	startNarrating( dialogStr );
-// 	// load_game(document.getElementById("game_data").value);
+// 	// load_game(document.getElementById("bitsy_x2_data").value);
 // }
 
 var isPreviewDialogMode = false;

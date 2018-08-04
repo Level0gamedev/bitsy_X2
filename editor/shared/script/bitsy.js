@@ -167,13 +167,13 @@ function attachCanvas(c) {
 }
 
 var curGameData = null;
-function load_game(game_data, startWithTitle) {
-	curGameData = game_data; //remember the current game (used to reset the game)
+function load_game(bitsy_x2_data, startWithTitle) {
+	curGameData = bitsy_x2_data; //remember the current game (used to reset the game)
 
 	dialogBuffer.Reset();
 	scriptInterpreter.ResetEnvironment(); // ensures variables are reset -- is this the best way?
 
-	parseWorld(game_data);
+	parseWorld(bitsy_x2_data);
 
 	if (!isPlayerEmbeddedInEditor) {
 		// hack to ensure default font is available

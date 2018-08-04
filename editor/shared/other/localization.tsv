@@ -1,7 +1,7 @@
 id	en	fr	pt	es	it	sv	de
 language_name	English	Français	Português	Español	Italiano	svenska	Deutsch
 language_translator_credit	English text by Adam Le Doux	Version française par Peter Februar & Dorian Beaugendre	Versão portuguesa por Bruno Silva	Versión española por Marina Díez (@Ninfa_dp)	Versione italiana a cura di Marina Díez (@Ninfa_dp)	Svensk översättning av Em (@Embotronic)	Deutsche Übersetzung von Kai Werder und Matthias Löwe
-bitsy_title	Bitsy	Bitsy	Bitsy	Bitsy	Bitsy	Bitsy	Bitsy
+bitsy_title	Bitsy_X2	Bitsy_X2	Bitsy_X2	Bitsy_X2	Bitsy_X2	Bitsy_X2	Bitsy_X2
 tools_label	tools	outils	ferramentas	Herramientas	Utensili	verktyg	Werkzeuge
 author_by	by	par	de	por	a cura di	av	von
 author_twitter	@adamledoux	@adamledoux	@adamledoux	@adamledoux	@adamledoux	@adamledoux	@adamledoux
@@ -22,7 +22,7 @@ reset_game	new game	nouveau jeu	novo jogo	nuevo juego	nuovo gioco	nytt spel	Neue
 unsupported_features	uh oh ~ your browser doesn't support all of bitsy's features, so some things might not work right. maybe try another browser, such as:	oh oh ~ ton navigateur internet ne supporte pas toutes les fonctionnalités de Bitsy, certaines choses pourraient ne pas fonctionner correctement, essaie un autre navigateur, comme :	uh oh - o teu explorador não suporta todas as funcionalidades do Bitsy, por isso algumas coisas poderão não funcionar correctamente. talvez queiras tentar outro explorador como:	oh oh! tu navegador no es compatible con todas las funcionalidades de Bitsy y es posible que algunas no funcionen correctamente. Puedes intentar utilizar otros como:	oh oh! il tuo navigator non è compatibile con tutte le funzionalità di Bitsy ed è possibile che alcune non funzionino bene. Puoi usare altri come:	oj då ~ bitsy har vissa funktioner som inte stöds av din webbläsare, så allt kanske inte fungerar som det ska. du kan prova med en annan webbläsare, till exempel:	Oh oh - Dein Browser unterstützt nicht alle Funktionen von Bitsy. Manche Dinge könnten nicht funktionieren, probiere doch einen der anderen Browser aus:
 browser_chrome	chrome	chrome	chrome	chrome	chrome	chrome	Chrome
 browser_firefox	firefox	firefox	firefox	firefox	firefox	firefox	Firefox
-unsupported_features_dismiss	I'll be ok, hide this message	j'ai compris, cacher ce message	eu compreendo, esconde esta mensagem	Entiendo. Oculta este mensaje. 	Capisco. Nasconde questo messaggio.	det går bra, göm det här meddelandet	Ist in Ordnung. Verberge diese Nachricht 
+unsupported_features_dismiss	I'll be ok, hide this message	j'ai compris, cacher ce message	eu compreendo, esconde esta mensagem	Entiendo. Oculta este mensaje. 	Capisco. Nasconde questo messaggio.	det går bra, göm det här meddelandet	Ist in Ordnung. Verberge diese Nachricht
 ending_label	ending	fin	final	final	fine	slut	Ende
 ending_place	place ending	ajouter une fin	colocar final	colocar final	mettere finale	placera slut	Platziere Ende
 ending_place_help	click space in room to add ending	cliquez une case dans la salle pour ajouter une fin	clica num espaço da sala para adicionar um final	haz click en un espacio de la sala para añadir un final	fai click da uno spazio nella stanza	klicka någonstans i rummet för att lägga till ett slut	Klicke einen Bereich in einem Raum an, um ein Ende zu platzieren

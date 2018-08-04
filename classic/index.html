@@ -514,19 +514,19 @@
 
 			function refreshGameData() {
 				var gameData = serializeWorld();
-				document.getElementById("game_data").value = gameData;
+				document.getElementById("bitsy_x2_data").value = gameData;
 			}
 
 			function on_edit_mode() {
 				stopGame();
-				parseWorld(document.getElementById("game_data").value); //reparse world to account for any changes during gameplay
+				parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world to account for any changes during gameplay
 				drawEditMap();
 				listenMapEditEvents();
 			}
 
 			function on_play_mode() {
 				unlistenMapEditEvents();
-				load_game(document.getElementById("game_data").value);
+				load_game(document.getElementById("bitsy_x2_data").value);
 			}
 
 			function toggleGrid() {
@@ -625,9 +625,9 @@
 				refreshGameData();
 			}
 
-			function on_game_data_change() {
+			function on_bitsy_x2_data_change() {
 				//todo - doesn't work perfectly, probably need to clear out the whole game world
-				parseWorld(document.getElementById("game_data").value); //reparse world if user directly manipulates game data
+				parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world if user directly manipulates game data
 				drawPaintCanvas();
 				drawEditMap();
 			}
@@ -659,7 +659,7 @@
 				
 			function exportGame() {
 				refreshGameData(); //just in case
-				var gameData = document.getElementById("game_data").value; //grab game data
+				var gameData = document.getElementById("bitsy_x2_data").value; //grab game data
 				gameData = gameData.split("\n").join("\\n"); //replace newlines with escaped newlines
 				var html = webExportTemplate.substr(); //copy template
 				var titleIndex = html.indexOf("@@T");
@@ -775,6 +775,6 @@
 		</div>
 		<div class="panel">
 			~ game data ~ <br>
-			<textarea id="game_data" style="width:300px;height:300px;" onchange="on_game_data_change();"></textarea>
+			<textarea id="bitsy_x2_data" style="width:300px;height:300px;" onchange="on_bitsy_x2_data_change();"></textarea>
 	</body>
 </html>

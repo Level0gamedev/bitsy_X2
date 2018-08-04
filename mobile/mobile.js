@@ -110,8 +110,8 @@ function start() {
 	paintTool.onReloadSprite = function(){ reloadSprite() };
 
 	//load last auto-save
-	if (localStorage.game_data) {
-		document.getElementById("game_data").value = localStorage.game_data;
+	if (localStorage.bitsy_x2_data) {
+		document.getElementById("bitsy_x2_data").value = localStorage.bitsy_x2_data;
 	}
 	else {
 		setDefaultGameState();
@@ -155,7 +155,7 @@ function start() {
 function initGameState() {
 	// re-import game data into the engine
 	clearGameData();
-	parseWorld(document.getElementById("game_data").value);
+	parseWorld(document.getElementById("bitsy_x2_data").value);
 	renderImages();
 }
 
@@ -183,13 +183,13 @@ var roomTool;
 // shared
 function on_play_mode() {
 	roomTool.unlistenEditEvents();
-	load_game(document.getElementById("game_data").value);
+	load_game(document.getElementById("bitsy_x2_data").value);
 }
 
 // shared
 function on_edit_mode() {
 	stopGame();
-	parseWorld(document.getElementById("game_data").value);
+	parseWorld(document.getElementById("bitsy_x2_data").value);
 	roomTool.listenEditEvents();
 	roomTool.drawEditMap();
 	// initGameStateAndRender();
@@ -377,10 +377,10 @@ function onPaletteChange() {
 /* 
 	DATA 
 */
-// similar to on_game_data_change()
+// similar to on_bitsy_x2_data_change()
 function editGameData() {
 	initGameStateAndRender();
-	localStorage.game_data = document.getElementById("game_data").value;
+	localStorage.bitsy_x2_data = document.getElementById("bitsy_x2_data").value;
 }
 
 /*

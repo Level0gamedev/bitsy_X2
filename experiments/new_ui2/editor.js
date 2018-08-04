@@ -377,11 +377,11 @@ function start() {
 
 
 	//load last auto-save
-	if (localStorage.game_data) {
+	if (localStorage.bitsy_x2_data) {
 		//console.log("~~~ found old save data! ~~~");
-		//console.log(localStorage.game_data);
-		document.getElementById("game_data").value = localStorage.game_data;
-		on_game_data_change_core();
+		//console.log(localStorage.bitsy_x2_data);
+		document.getElementById("bitsy_x2_data").value = localStorage.bitsy_x2_data;
+		on_bitsy_x2_data_change_core();
 	}
 	else {
 		//console.log("~~~~ no old save data! ~~~~");
@@ -1447,15 +1447,15 @@ function refreshGameData() {
 	var gameData = serializeWorld();
 	//console.log("refresh!");
 	//console.log(gameData);
-	document.getElementById("game_data").value = gameData;
-	localStorage.setItem("game_data", gameData); //auto-save
+	document.getElementById("bitsy_x2_data").value = gameData;
+	localStorage.setItem("bitsy_x2_data", gameData); //auto-save
 }
 
 function on_edit_mode() {
 	isPlayMode = false;
 	stopGame();
 	// TODO I should really do more to separate the editor's game-data from the engine's game-data
-	parseWorld(document.getElementById("game_data").value); //reparse world to account for any changes during gameplay
+	parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world to account for any changes during gameplay
 	curRoom = sortedRoomIdList()[roomIndex]; //restore current room to pre-play state
 	drawEditMap();
 	listenMapEditEvents();
@@ -1464,7 +1464,7 @@ function on_edit_mode() {
 function on_play_mode() {
 	isPlayMode = true;
 	unlistenMapEditEvents();
-	load_game(document.getElementById("game_data").value);
+	load_game(document.getElementById("bitsy_x2_data").value);
 }
 
 function toggleGrid() {
@@ -1707,14 +1707,14 @@ function on_change_dialog() {
 	refreshGameData();
 }
 
-function on_game_data_change() {
-	on_game_data_change_core();
+function on_bitsy_x2_data_change() {
+	on_bitsy_x2_data_change_core();
 	refreshGameData();
 }
 
-function on_game_data_change_core() {
+function on_bitsy_x2_data_change_core() {
 	clearGameData();
-	parseWorld(document.getElementById("game_data").value); //reparse world if user directly manipulates game data
+	parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world if user directly manipulates game data
 
 	var curPaintMode = paintMode; //save current paint mode (hacky)
 
@@ -1832,7 +1832,7 @@ function apply_wall_setting_all_rooms() {
 
 function exportGame() {
 	refreshGameData(); //just in case
-	var gameData = document.getElementById("game_data").value; //grab game data
+	var gameData = document.getElementById("bitsy_x2_data").value; //grab game data
 	exporter.exportGame( gameData, title, exportPageColor, "mygame.html" ); //download as html file
 }
 
@@ -2146,8 +2146,8 @@ function importGameFromFile(e) {
 		gameDataStr = exporter.importGame( fileText );
 		
 		// change game data & reload everything
-		document.getElementById("game_data").value = gameDataStr;
-		on_game_data_change();
+		document.getElementById("bitsy_x2_data").value = gameDataStr;
+		on_bitsy_x2_data_change();
 	}
 }
 

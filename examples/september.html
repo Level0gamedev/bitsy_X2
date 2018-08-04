@@ -2484,9 +2484,9 @@ function attachCanvas(c) {
 }
 
 var curGameData = null;
-function load_game(game_data) {
-	curGameData = game_data; //remember the current game (used to reset the game)
-	parseWorld(game_data);
+function load_game(bitsy_x2_data) {
+	curGameData = bitsy_x2_data; //remember the current game (used to reset the game)
+	parseWorld(bitsy_x2_data);
 	renderImages();
 	onready();
 }

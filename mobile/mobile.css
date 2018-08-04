@@ -102,7 +102,7 @@ canvas {
 	}
 }
 
-#game_data {
+#bitsy_x2_data {
 	width: calc(100% - 40px);
 	height: 60%;
 	margin: 20px;

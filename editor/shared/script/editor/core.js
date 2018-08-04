@@ -443,10 +443,10 @@ function createDefaultGameStateFunction() {
 	resources.load("other", "defaultGameData.bitsy");
 
 	return function() {
-		document.getElementById("game_data").value = resources.get("defaultGameData.bitsy"); // reset game data
-		localStorage.game_data = document.getElementById("game_data").value; // save game
+		document.getElementById("bitsy_x2_data").value = resources.get("defaultGameData.bitsy"); // reset game data
+		localStorage.bitsy_x2_data = document.getElementById("bitsy_x2_data").value; // save game
 		clearGameData();
-		parseWorld(document.getElementById("game_data").value); // load game
+		parseWorld(document.getElementById("bitsy_x2_data").value); // load game
 	}
 }
 var setDefaultGameState = createDefaultGameStateFunction();
@@ -500,12 +500,12 @@ function refreshGameData() {
 
 	// var gameData = serializeWorld();
 
-	// document.getElementById("game_data").value = gameData; // TODO : this is where the slow down is
+	// document.getElementById("bitsy_x2_data").value = gameData; // TODO : this is where the slow down is
 
 	var gameDataNoFonts = serializeWorld(true);
-	document.getElementById("game_data").value = showFontDataInGameData ? serializeWorld() : gameDataNoFonts;
+	document.getElementById("bitsy_x2_data").value = showFontDataInGameData ? serializeWorld() : gameDataNoFonts;
 
-	// localStorage.setItem("game_data", gameData); //auto-save
+	// localStorage.setItem("bitsy_x2_data", gameData); //auto-save
 
-	localStorage.setItem("game_data", gameDataNoFonts);
+	localStorage.setItem("bitsy_x2_data", gameDataNoFonts);
 }
