@@ -249,8 +249,8 @@ function PaintExplorer(idPrefix,selectCallback) {
 function ThumbnailRenderer() {
 	var drawingThumbnailCanvas, drawingThumbnailCtx;
 	drawingThumbnailCanvas = document.createElement("canvas");
-	drawingThumbnailCanvas.width = tilesize * scale/2; // TODO: scale constants need to be contained somewhere
-	drawingThumbnailCanvas.height = tilesize * scale/2;
+	drawingThumbnailCanvas.width = tilesize * scale; // TODO: scale constants need to be contained somewhere
+	drawingThumbnailCanvas.height = tilesize * scale;
 	drawingThumbnailCtx = drawingThumbnailCanvas.getContext("2d");
 
 	var thumbnailRenderEncoders = {};
