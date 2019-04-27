@@ -1,5 +1,5 @@
-/* 
-	CORE 
+/*
+	CORE
 */
 
 /* MODES */
@@ -246,14 +246,22 @@ function makeItem(id,imageData) { // NOTE : same as tile right now? make more li
 function makeDrawing(id,imageData) {
 	if (!imageData) {
 		imageData = [[
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		]];
 	}
 	// TODO RENDERER : stop using global renderer
@@ -308,7 +316,7 @@ function tileTypeToIdPrefix(type) {
 		return "ITM_";
 }
 
-/* DIALOG UI 
+/* DIALOG UI
 - needs a better home
 	- into paint object?
 	- needs its own controller?
@@ -372,7 +380,7 @@ function on_change_dialog() {
 
 /* PALETTE TOOL STUFF
 TODO:
-- move into its own file 
+- move into its own file
 - is PaletteTool the best name?
 - should it create its own color picker?
 */
@@ -467,16 +475,16 @@ function ResourceLoader() {
 	}
 }
 
-function setDefaultGameState() {
-	var defaultData = document.getElementById("defaultGameData").text;
-	// console.log("DEFAULT DATA \n" + defaultData);
-	document.getElementById("game_data").value = defaultData;
-	localStorage.game_data = document.getElementById("game_data").value; // save game
-	clearGameData();
-	parseWorld(document.getElementById("game_data").value); // load game
+function createDefaultGameStateFunction() {
+	var resources = new ResourceLoader();
+	resources.load("other", "defaultGameData.bitsy");
 
-	// TODO RENDERER : refresh images
-	// TODO -- more setup???
+	return function() {
+		document.getElementById("bitsy_x2_data").value = resources.get("defaultGameData.bitsy"); // reset game data
+		localStorage.bitsy_x2_data = document.getElementById("bitsy_x2_data").value; // save game
+		clearGameData();
+		parseWorld(document.getElementById("bitsy_x2_data").value); // load game
+	}
 }
 
 function newGameDialog() {
@@ -488,7 +496,7 @@ function newGameDialog() {
 }
 
 function resetGameData() {
-	setDefaultGameState();
+	//setDefaultGameState(); todo needs porting from bitsy
 
 	// TODO : localize default_title
 	title = localization.GetStringOrFallback("default_title", "Write your game's title here");
@@ -534,14 +542,14 @@ function refreshGameData() {
 
 	// var gameData = serializeWorld();
 
-	// document.getElementById("game_data").value = gameData; // TODO : this is where the slow down is
+	// document.getElementById("bitsy_x2_data").value = gameData; // TODO : this is where the slow down is
 
 	var gameDataNoFonts = serializeWorld(true);
-	document.getElementById("game_data").value = showFontDataInGameData ? serializeWorld() : gameDataNoFonts;
+	document.getElementById("bitsy_x2_data").value = showFontDataInGameData ? serializeWorld() : gameDataNoFonts;
 
-	// localStorage.setItem("game_data", gameData); //auto-save
+	// localStorage.setItem("bitsy_x2_data", gameData); //auto-save
 
-	localStorage.setItem("game_data", gameDataNoFonts);
+	localStorage.setItem("bitsy_x2_data", gameDataNoFonts);
 }
 
 /* TIMER */

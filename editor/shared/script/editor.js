@@ -70,7 +70,7 @@ function detectBrowserFeatures() {
 			browserFeatures.colorPicker = false;
 			document.getElementById("pageColor").type = "text";
 		}
-		
+
 		document.body.removeChild(input);
 	} catch(e) {
 		browserFeatures.colorPicker = false;
@@ -228,19 +228,18 @@ function start() {
 
 	//
 	drawingThumbnailCanvas = document.createElement("canvas");
-	drawingThumbnailCanvas.width = 8 * scale;
-	drawingThumbnailCanvas.height = 8 * scale;
+	drawingThumbnailCanvas.width = tilesize * scale;
+	drawingThumbnailCanvas.height = tilesize * scale;
 	drawingThumbnailCtx = drawingThumbnailCanvas.getContext("2d");
 
 	//load last auto-save
-	if (localStorage.game_data) {
+	if (localStorage.bitsy_x2_data) {
 		//console.log("~~~ found old save data! ~~~");
-		//console.log(localStorage.game_data);
-		document.getElementById("game_data").value = localStorage.game_data;
-		on_game_data_change_core();
-	}
-	else {
-		setDefaultGameState();
+		//console.log(localStorage.bitsy_x2_data);
+		document.getElementById("bitsy_x2_data").value = localStorage.bitsy_x2_data;
+		on_bitsy_x2_data_change_core();
+	} else {
+		//setDefaultGameState(); todo needs porting from bitsy
 	}
 
 	roomIndex = sortedRoomIdList().indexOf(curRoom);
@@ -314,7 +313,7 @@ function start() {
 
 	onInventoryChanged = function(id) {
 		updateInventoryUI();
-	
+
 		// animate to draw attention to change
 		document.getElementById("inventoryItem_" + id).classList.add("flash");
 		setTimeout(
@@ -328,7 +327,7 @@ function start() {
 
 	onVariableChanged = function(id) {
 		updateInventoryUI();
-	
+
 		// animate to draw attention to change
 		document.getElementById("inventoryVariable_" + id).classList.add("flash");
 		setTimeout(
@@ -465,7 +464,7 @@ function on_drawing_name_change() {
 
 				if( node.type != "function" || node.name != "item" )
 					return; // not the right type of node
-				
+
 				if( node.arguments.length <= 0 || node.arguments[0].type != "literal" )
 					return; // no argument available
 
@@ -812,7 +811,7 @@ function duplicateDrawing() {
 
 		drawing.id = nextTileId();
 
-		console.log("DUPLICATE TILE");		
+		console.log("DUPLICATE TILE");
 		console.log(drawing.id);
 		console.log(copiedImageData);
 
@@ -844,7 +843,7 @@ function duplicateDrawing() {
 
 		drawing.id = nextSpriteId();
 
-		console.log("DUPLICATE SPRITE");	
+		console.log("DUPLICATE SPRITE");
 		console.log(drawing.id);
 		console.log(copiedImageData);
 
@@ -874,7 +873,7 @@ function duplicateDrawing() {
 
 		drawing.id = nextItemId();
 
-		console.log("DUPLICATE ITEM");	
+		console.log("DUPLICATE ITEM");
 		console.log(drawing.id);
 		console.log(copiedImageData);
 
@@ -1133,7 +1132,7 @@ function on_edit_mode() {
 	isPlayMode = false;
 	stopGame();
 	// TODO I should really do more to separate the editor's game-data from the engine's game-data
-	parseWorld(document.getElementById("game_data").value); //reparse world to account for any changes during gameplay
+	parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world to account for any changes during gameplay
 
 	curRoom = sortedRoomIdList()[roomIndex]; //restore current room to pre-play state
 
@@ -1157,7 +1156,7 @@ function on_edit_mode() {
 
 // hacky - part of hiding font data from the game data
 function getFullGameData() {
-	// return document.getElementById("game_data").value + fontManager.GetData(fontName);
+	// return document.getElementById("bitsy_x2_data").value + fontManager.GetData(fontName);
 	return serializeWorld();
 }
 
@@ -1166,7 +1165,7 @@ function on_play_mode() {
 
 	roomTool.unlistenEditEvents();
 
-	// load_game(document.getElementById("game_data").value, !isPreviewDialogMode /* startWithTitle */);
+	// load_game(document.getElementById("bitsy_x2_data").value, !isPreviewDialogMode /* startWithTitle */);
 	load_game(getFullGameData(), !isPreviewDialogMode /* startWithTitle */);
 
 	console.log("PLAY!! ~~ PREVIEW ? " + isPreviewDialogMode);
@@ -1368,7 +1367,7 @@ function on_paint_avatar() {
 	drawing.type = TileType.Avatar;
 	drawing.id = "A";
 	paintTool.reloadDrawing();
-	if(paintExplorer != null) { 
+	if(paintExplorer != null) {
 		paintExplorer.Refresh( paintTool.drawing.type );
 		paintExplorer.ChangeSelection( paintTool.drawing.id );
 	}
@@ -1586,9 +1585,8 @@ function on_change_adv_dialog() {
 	on_change_dialog();
 }
 
-function on_game_data_change() {
-	on_game_data_change_core();
-
+function on_bitsy_x2_data_change() {
+	on_bitsy_x2_data_change_core();
 	refreshGameData();
 
 	// ui stuff
@@ -1642,9 +1640,9 @@ function convertGameDataToCurVersion(importVersion) {
 	}
 }
 
-function on_game_data_change_core() {
+function on_bitsy_x2_data_change_core() {
 	clearGameData();
-	var version = parseWorld(document.getElementById("game_data").value); //reparse world if user directly manipulates game data
+	var version = parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world if user directly manipulates game data
 
 	convertGameDataToCurVersion(version);
 
@@ -1793,7 +1791,7 @@ function filenameFromGameTitle() {
 
 function exportGame() {
 	refreshGameData(); //just in case
-	// var gameData = document.getElementById("game_data").value; //grab game data
+	// var gameData = document.getElementById("bitsy_x2_data").value; //grab game data
 	var gameData = getFullGameData();
 	var size = document.getElementById("exportSizeFixedInput").value;
 	exporter.exportGame( gameData, title, export_settings.page_color, filenameFromGameTitle() + ".html", isFixedSize, size ); //download as html file
@@ -1801,7 +1799,7 @@ function exportGame() {
 
 function exportGameData() {
 	refreshGameData(); //just in case
-	// var gameData = document.getElementById("game_data").value; //grab game data
+	// var gameData = document.getElementById("bitsy_x2_data").value; //grab game data
 	var gameData = getFullGameData();
 	ExporterUtils.DownloadFile( filenameFromGameTitle() + ".bitsy", gameData );
 }
@@ -2213,7 +2211,7 @@ function finishRecordingGif(gif) {
 
 		gif.palette = hexPalette; // hacky
 
-		gifencoder.encode( gif, 
+		gifencoder.encode( gif,
 			function(uri, blob) {
 				document.getElementById("gifEncodingText").style.display="none";
 				document.getElementById("gifStartButton").style.display="inline";
@@ -2253,14 +2251,11 @@ function importGameFromFile(e) {
 		var fileText = reader.result;
 		gameDataStr = exporter.importGame( fileText );
 
-		console.log("import load end");
-		// console.log(gameDataStr);
-		
 		// change game data & reload everything
-		document.getElementById("game_data").value = gameDataStr;
-		on_game_data_change();
+		document.getElementById("bitsy_x2_data").value = gameDataStr;
+		on_bitsy_x2_data_change();
 
-		paintExplorer.Refresh(drawing.type);
+        paintExplorer.Refresh(drawing.type);
 	}
 }
 
@@ -2320,7 +2315,7 @@ function on_toggle_animated() {
 			removeSpriteAnimation();
 		}
 		else if ( drawing.type === TileType.Tile ) {
-			removeTileAnimation();			
+			removeTileAnimation();
 		}
 		else if ( drawing.type === TileType.Item ) {
 			console.log("REMOVE ITEM ANIMATION");
@@ -2499,7 +2494,7 @@ function cacheDrawingAnimation(drawing,sourceId) {
 function restoreDrawingAnimation(sourceId,cachedAnimation) {
 	var imageSource = renderer.GetImageSource(sourceId);
 	for (f in cachedAnimation) {
-		imageSource.push( cachedAnimation[f] );	
+		imageSource.push( cachedAnimation[f] );
 	}
 	renderer.SetImageSource(sourceId, imageSource);
 }
@@ -2573,7 +2568,7 @@ function grabCard(e) {
 
 	grabbedPanel.size = getElementSize( grabbedPanel.card );
 	var pos = getElementPosition( grabbedPanel.card );
-	
+
 	grabbedPanel.shadow = document.createElement("div");
 	grabbedPanel.shadow.className = "panelShadow";
 	grabbedPanel.shadow.style.width = grabbedPanel.size.x + "px";
@@ -2695,7 +2690,7 @@ function getElementSize(e) { /* gets visible size */
 	};
 }
 
-// sort of a hack to avoid accidentally activating backpage and nextpage while scrolling through editor panels 
+// sort of a hack to avoid accidentally activating backpage and nextpage while scrolling through editor panels
 function blockScrollBackpage(e) {
 	var el = document.getElementById("editorWindow");
 	var maxX = el.scrollWidth - el.offsetWidth;
@@ -2986,7 +2981,7 @@ var IfBlockUI = function(node, num) {
 			ifNode.conditions.splice(index,1);
 			ifNode.results.splice(index,1);
 			serializeAdvDialog();
-			reloadAdvDialogUI();	
+			reloadAdvDialogUI();
 		};
 		return onDelete;
 	}
@@ -3339,7 +3334,7 @@ var SeqBlockUI = function(node, num) {
 	typeEl.innerText = localization.GetStringOrFallback("dialog_block_list", "list");
 	typeEl.title = "one line of dialog in the list is said on each interaction, in the order you choose";
 	leftSpan.appendChild( typeEl );
-	
+
 	//
 	var deleteEl = document.createElement("button");
 	deleteEl.appendChild( createIconElement("clear") );
@@ -3859,7 +3854,7 @@ function updateInventoryVariableUI(){
 		deleteVarEl.appendChild( createIconElement("clear") );
 		deleteVarEl.addEventListener('click', createOnVariableDelete(varInfo));
 		deleteVarEl.title = "delete this variable";
-		varDiv.appendChild(deleteVarEl);	
+		varDiv.appendChild(deleteVarEl);
 	}
 
 	if(isPlayMode) {
@@ -3917,7 +3912,7 @@ function togglePreviewDialog(event) {
 
 			console.log("PLAY MODE");
 			on_play_mode();
-		
+
 			startPreviewDialog( previewDialogScriptTree, function() {
 				console.log("CALLBACK!!!");
 				togglePreviewDialog( { target : { checked : false } } );

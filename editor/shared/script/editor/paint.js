@@ -137,7 +137,7 @@ function PaintTool(canvas, roomTool) {
 		canvas.addEventListener("touchend", onTouchEnd);
 	}
 
-	// TODO : 
+	// TODO :
 	function onMouseDown(e) {
 		// if( Ed().platform == PlatformType.Desktop ) // hack
 			if (isPlayMode) return; //can't paint during play mode
@@ -229,8 +229,8 @@ function PaintTool(canvas, roomTool) {
 		}
 
 		//draw pixels
-		for (var x = 0; x < 8; x++) {
-			for (var y = 0; y < 8; y++) {
+		for (var x = 0; x < tilesize; x++) {
+			for (var y = 0; y < tilesize; y++) {
 				// draw alternate frame
 				if (self.isCurDrawingAnimated && curDrawingAltFrameData()[y][x] === 1) {
 					ctx.globalAlpha = 0.3;
@@ -453,4 +453,3 @@ function PaintTool(canvas, roomTool) {
 		}
 	}
 }
-

@@ -116,10 +116,10 @@ function clearGameData() {
 	textDirection = TextDirection.LeftToRight;
 }
 
-var width = 128;
-var height = 128;
-var scale = 4; //this is stupid but necessary
-var tilesize = 8;
+var width = 256;
+var height = 256;
+var scale = 2; //this is stupid but necessary
+var tilesize = 16;
 var mapsize = 16;
 
 var curRoom = "0";
@@ -175,13 +175,13 @@ function attachCanvas(c) {
 }
 
 var curGameData = null;
-function load_game(game_data, startWithTitle) {
-	curGameData = game_data; //remember the current game (used to reset the game)
+function load_game(bitsy_x2_data, startWithTitle) {
+	curGameData = bitsy_x2_data; //remember the current game (used to reset the game)
 
 	dialogBuffer.Reset();
 	scriptInterpreter.ResetEnvironment(); // ensures variables are reset -- is this the best way?
 
-	parseWorld(game_data);
+	parseWorld(bitsy_x2_data);
 
 	if (!isPlayerEmbeddedInEditor) {
 		// hack to ensure default font is available
@@ -456,16 +456,16 @@ var loading_interval = null;
 
 function loadingAnimation() {
 	//create image
-	var loadingAnimImg = ctx.createImageData(8*scale, 8*scale);
+	var loadingAnimImg = ctx.createImageData(tilesize*scale, tilesize*scale);
 	//draw image
-	for (var y = 0; y < 8; y++) {
-		for (var x = 0; x < 8; x++) {
-			var i = (y * 8) + x;
+	for (var y = 0; y < tilesize; y++) {
+		for (var x = 0; x < tilesize; x++) {
+			var i = (y * tilesize) + x;
 			if (loading_anim_data[loading_anim_frame][i] == 1) {
 				//scaling nonsense
 				for (var sy = 0; sy < scale; sy++) {
 					for (var sx = 0; sx < scale; sx++) {
-						var pxl = 4 * ( (((y*scale)+sy) * (8*scale)) + ((x*scale)+sx) );
+						var pxl = 4 * ( (((y*scale)+sy) * (tilesize*scale)) + ((x*scale)+sx) );
 						loadingAnimImg.data[pxl+0] = 255;
 						loadingAnimImg.data[pxl+1] = 255;
 						loadingAnimImg.data[pxl+2] = 255;
@@ -476,7 +476,7 @@ function loadingAnimation() {
 		}
 	}
 	//put image on canvas
-	ctx.putImageData(loadingAnimImg,scale*(width/2 - 4),scale*(height/2 - 4));
+	ctx.putImageData(loadingAnimImg,scale*(width/4 - 4),scale*(height/4 - 4));
 	//update frame
 	loading_anim_frame++;
 	if (loading_anim_frame >= 5) loading_anim_frame = 0;
@@ -488,7 +488,7 @@ function updateLoadingScreen() {
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 
 	loadingAnimation();
-	drawSprite( getSpriteImage(sprite["a"],"0",0), 8, 8, ctx );
+	drawSprite( getSpriteImage(sprite["a"],"0",0), tilesize, tilesize, ctx );
 }
 
 function update() {
@@ -937,7 +937,7 @@ function movePlayer(direction) {
 		player().y += 1;
 		didPlayerMoveThisFrame = true;
 	}
-	
+
 	var ext = getExit( player().room, player().x, player().y );
 	var end = getEnding( player().room, player().x, player().y );
 	// TODO : vNext
@@ -1272,7 +1272,7 @@ function serializeWorld(skipFonts) {
 			// old non-comma separated format
 			for (i in room[id].tilemap) {
 				for (j in room[id].tilemap[i]) {
-					worldStr += room[id].tilemap[i][j];	
+					worldStr += room[id].tilemap[i][j];
 				}
 				worldStr += "\n";
 			}
@@ -1569,7 +1569,7 @@ function parseRoom(lines, i) {
 				};
 			}
 			else if ( flags.ROOM_FORMAT == 0 ) { // TODO: right now this shortcut only works w/ the old comma separate format
-				/* PLACE MULTIPLE SPRITES*/ 
+				/* PLACE MULTIPLE SPRITES*/
 				//Does find and replace in the tilemap (may be hacky, but its convenient)
 				var sprList = sprId.split(",");
 				for (row in room[id].tilemap) {
@@ -2130,7 +2130,7 @@ function getRoomPal(roomId) {
 			return "0";
 		}
 	}
-	return "0";	
+	return "0";
 }
 
 var isDialogMode = false;

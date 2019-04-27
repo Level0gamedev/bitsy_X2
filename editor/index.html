@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>Bitsy</title>
+		<title>Bitsy HD</title>
 		<link rel="icon" type="image/png" href="shared/image/cat5.png" />
 
 		<!-- STYLES -->
@@ -45,7 +45,7 @@
 		<link href="shared/style/googleMaterialIcons.css" rel="stylesheet">
 
 	</head>
- 
+
 	<body onload="start()">
 
 		<div id="appRoot">
@@ -57,10 +57,10 @@
 				<div id="topbarFlexContainer">
 
 					<div id="logoFlexItem">
-						<span title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle">
+						<span title="Bitsy X2 ~ hack of bitsy to make slightly bigger worlds ~" id="bitsyLogoTitle">
 							<img src="shared/image/cat.svg" height="24px" width="24px" id="bitsyLogo"/>
-							<span class="localize bitsy_title">Bitsy</span>
-						</span>	
+							<span class="localize bitsy_title">Bitsy_X2</span>
+						</span>
 					</div>
 
 					<div id="titleFlexItem">
@@ -83,6 +83,9 @@
 						<span class="localize author_by">by</span>
 						<a href="https://www.twitter.com/adamledoux" target="_blank">
 							<span class="localize author_twitter" style="direction:ltr; unicode-bidi:bidi-override;">@adamledoux</span>
+						</a> & hacked by
+						<a href="https://twitter.com/FredBednarskix" target="_blank">
+							@FredBednarski
 						</a>
 					</div>
 
@@ -94,10 +97,10 @@
 
 				<input type="checkbox" value="aboutPanel" id="aboutCheck" onclick="togglePanelAnimated(event);" checked/>
 				<label title="show / hide about window" for="aboutCheck">
-					<i class="material-icons">favorite</i> 
+					<i class="material-icons">favorite</i>
 					<span class="localize about_tool_name">about</span>
 				</label>
-				
+
 				<input type="checkbox" value="roomPanel" id="roomCheck" onclick="togglePanelAnimated(event);" checked/>
 				<label title="show / hide room window" for="roomCheck">
 					<i class="material-icons">grid_on</i>
@@ -115,13 +118,13 @@
 					<i class="material-icons">brush</i>
 					<span class="localize paint_tool_name">paint</span>
 				</label>
-				
+
 				<input type="checkbox" value="paintExplorerPanel" id="paintExplorerCheck" onclick="togglePanelAnimated(event);" />
 				<label title="show / hide find drawing window" for="paintExplorerCheck">
 					<i class="material-icons">brush</i>
 					<span class="localize explorer_tool_name">find drawing</span>
 				</label>
-				
+
 				<input type="checkbox" value="colorsPanel" id="colorsCheck" onclick="togglePanelAnimated(event);"  checked/>
 				<label title="show / hide color palette window" for="colorsCheck">
 					<i class="material-icons">palette</i>
@@ -139,19 +142,19 @@
 					<i class="material-icons">vpn_key</i>
 					<span class="localize inventory_tool_name">inventory</span>
 				</label>
-				
+
 				<input type="checkbox" value="downloadPanel" id="downloadCheck" onclick="togglePanelAnimated(event);"  checked/>
 				<label title="show / hide download window" for="downloadCheck">
 					<i class="material-icons">file_download</i>
 					<span class="localize download_tool_name">download</span>
 				</label>
-				
+
 				<input type="checkbox" value="gifPanel" id="gifCheck" onclick="togglePanelAnimated(event);" />
 				<label title="show / hide gif recording window" for="gifCheck" class="notMobile">
 					<i class="material-icons">videocam</i>
 					<span class="localize gif_tool_name">record gif</span>
 				</label>
-				
+
 				<input type="checkbox" value="dataPanel" onclick="togglePanelAnimated(event);" id="dataCheck"/>
 				<label title="show / hide game data window" for="dataCheck" class="notMobile">
 					<i class="material-icons">save</i>
@@ -242,7 +245,7 @@
 							<span class="localize about9">have fun making things with bitsy!</span>
 						</p>
 						<p>
-							- 
+							-
 							<a target="_blank" href="https://www.twitter.com/adamledoux">
 								<span class="localize about10_link_twitter">adam</span>
 							</a>
@@ -367,8 +370,8 @@
 							<span class="localize room_tool_name">room</span>
 						</div>
 					</div>
-					
-					<div style="margin-bottom:2px;">			
+
+					<div style="margin-bottom:2px;">
 						<input type="checkbox" id="playModeCheck" onclick="togglePlayMode(event);" />
 						<label title="play / pause game" for="playModeCheck">
 							<i class="material-icons" id="playModeIcon">play_arrow</i>
@@ -389,15 +392,15 @@
 						</label>
 
 						<br>
-						
+
 						<div id="roomTools" style="display:none;">
 							<div id="roomNav" class="buttonGroup">
 								<span title="a name to refer to this room" class="controlSpan">
 									<span class="localize name_label">name</span>
 									<!-- <span id="roomId">0</span> -->
-									
+
 									<input type="text" id="roomName" onchange="on_room_name_change();" style="width:100px;"></input>
-									
+
 								</span>
 								<button title="previous room" class="color0" onclick="prevRoom();">
 									<i class="navigate_before material-icons"><span>navigate_before</span></i>
@@ -420,7 +423,7 @@
 							</div>
 
 							<div id="roomColor" class="buttonGroup">
-								<span class="localize palette_tool_name">colors</span>: 
+								<span class="localize palette_tool_name">colors</span>:
 								<select title="select color palette for room" id="roomPaletteSelect" onchange="roomPaletteChange(event);">
 									<option value="0">palette 0</option> <!-- other options are added dynamically -->
 								</select>
@@ -431,19 +434,19 @@
 							<div id="roomVisibility" class="buttonGroup">
 								<input type="checkbox" id="roomGridCheck" onclick="toggleMapGrid(event);" checked/>
 								<label title="show / hide grid" for="roomGridCheck">
-									<i class="material-icons" id="roomGridIcon">visibility</i> 
+									<i class="material-icons" id="roomGridIcon">visibility</i>
 									<span class="localize grid_toggle_visible">grid</span>
 								</label>
 
 								<input type="checkbox" id="roomWallsCheck" onclick="toggleCollisionMap(event);" />
 								<label title="show / hide walls" for="roomWallsCheck">
-									<i class="material-icons" id="roomWallsIcon">visibility_off</i> 
+									<i class="material-icons" id="roomWallsIcon">visibility_off</i>
 									<span class="localize walls_toggle_visible">walls</span>
 								</label>
 
 								<input type="checkbox" id="roomMarkersCheck" onclick="toggleRoomMarkers(event.target.checked);" checked/>
 								<label title="show / hide exits & endings" for="roomMarkersCheck">
-									<i class="material-icons" id="roomMarkersIcon">visibility</i> 
+									<i class="material-icons" id="roomMarkersIcon">visibility</i>
 									<span class="localize marker_tool_name">exits & endings</span>
 								</label>
 							</div>
@@ -586,7 +589,7 @@
 
 									<div style="padding:4px;">
 										<div title="select transition effect" class="controlBox" style="font-size:14px;">
-											<span class="localize exit_transition_label">transition effect</span>: 
+											<span class="localize exit_transition_label">transition effect</span>:
 											<select id="exitTransitionEffectSelect" onchange="onChangeExitTransitionEffect(event.target.value);">
 												<option value="none">none</option>
 												<option value="fade_w">fade (white)</option>
@@ -687,7 +690,7 @@
 							<i class="material-icons">vpn_key</i>
 							<span class="localize item_label">item</span>
 						</label>
-						
+
 					</form>
 					<canvas id="paint"></canvas>
 					<br>
@@ -717,22 +720,22 @@
 						<div class="buttonGroup notMobile">
 							<input type="checkbox" id="paintGridCheck" onclick="togglePaintGrid(event);" checked/>
 							<label title="show / hide grid" for="paintGridCheck">
-								<i class="material-icons" id="paintGridIcon">visibility</i> 
+								<i class="material-icons" id="paintGridIcon">visibility</i>
 								<span class="localize grid_toggle_visible">grid</span>
 							</label>
 						</div>
 						<div style="margin-bottom: 5px;" class="notMobile">
-							
+
 							<span id="drawingNameUI" title="a name to refer to this drawing" class="controlSpan">
 								<span class="localize name_label">name</span>
 								<input type="text" id="drawingName" onchange="on_drawing_name_change();" style="width:100px;"></input>
 							</span>
 
 							<button id="showInventoryButton" title="show inventory" onclick="showPanel('inventoryPanel');">
-								<i class="material-icons">vpn_key</i> 
+								<i class="material-icons">vpn_key</i>
 								<span class="localize inventory_tool_name">inventory</span>
 							</button>
-							
+
 						</div>
 					</div>
 
@@ -785,7 +788,7 @@
 							</div>
 						</div>
 					</div>
-					
+
 				</div>
 
 				<div id="paintExplorerPanel" class="panel color1">
@@ -866,19 +869,19 @@
 					<form id="colorPaletteForm">
 						<input type="radio" name="colorPalette" value="background" id="colorPaletteOptionBackground" onclick="changeColorPickerIndex(0);" checked>
 						<label id="colorPaletteLabelBackground" for="colorPaletteOptionBackground" title="pick background color">
-							<i class="material-icons">grid_on</i> 
+							<i class="material-icons">grid_on</i>
 							<span class="localize palette_background">background color</span>
 						</label>
 
 						<input type="radio" name="colorPalette" value="background" id="colorPaletteOptionTile" onclick="changeColorPickerIndex(1);">
 						<label id="colorPaletteLabelTile" for="colorPaletteOptionTile" title="pick tile color">
-							<i class="material-icons">terrain</i> 
+							<i class="material-icons">terrain</i>
 							<span class="localize palette_tile">tile color</span>
 						</label>
 
 						<input type="radio" name="colorPalette" value="background" id="colorPaletteOptionSprite" onclick="changeColorPickerIndex(2);">
 						<label id="colorPaletteLabelSprite" for="colorPaletteOptionSprite" title="pick sprite / avatar / item color">
-							<i class="material-icons">nature_people</i> 
+							<i class="material-icons">nature_people</i>
 							<span class="localize palette_sprite">sprite color</span>
 						</label>
 					</form>
@@ -901,14 +904,14 @@
 						</label>
 
 						<br>
-						
+
 						<div id="paletteTools" style="display:none;">
 							<span id="paletteNameUI" title="a name to refer to this drawing" class="controlSpan">
 								<span class="localize name_label">name</span>
 								<input type="text" id="paletteName" onchange="on_palette_name_change();" style="width:80px;"></input>
 							</span>
 							<br>
-							
+
 							<div class="buttonGroup" id="paletteNav">
 								<button title="previous color palette" class="color0" onclick="prevPalette();">
 									<i class="navigate_before material-icons"><span>navigate_before</span></i>
@@ -952,14 +955,14 @@
 									<!-- <input type="checkbox" id="dialogShowDocsCheck" onclick="toggleDialogDocs(event);"/>
 									<label title="show / hide the code for this dialog" for="dialogShowDocsCheck">
 										<i class="material-icons">info</i>
-										<span id="dialogToggleDocsShowText" class="localize dialog_show_docs">show docs</span> 
+										<span id="dialogToggleDocsShowText" class="localize dialog_show_docs">show docs</span>
 										<span id="dialogToggleDocsHideText" class="localize dialog_hide_docs" style="display:none;">hide docs</span>
 									</label> -->
 
 									<input type="checkbox" id="dialogShowCodeCheck" onclick="toggleDialogCode(event);" />
 									<label title="show / hide the code for this dialog" for="dialogShowCodeCheck">
-										<i class="material-icons">code</i> 
-										<span id="dialogToggleCodeShowText" class="localize dialog_show_code">show code</span> 
+										<i class="material-icons">code</i>
+										<span id="dialogToggleCodeShowText" class="localize dialog_show_code">show code</span>
 										<span id="dialogToggleCodeHideText" class="localize dialog_hide_code" style="display:none;">hide code</span>
 									</label>
 								</span>
@@ -969,12 +972,12 @@
 								<form style="display:inline;">
 									<input type="radio" name="dialogTools" value="section" id="dialogToolsOptionSection" onclick="showDialogToolsSection();" checked>
 									<label for="dialogToolsOptionSection" class="left" onmousedown="preventTextDeselectAndClick(event);" title="add new dialog sections">
-										<i class="material-icons">add_circle</i> 
+										<i class="material-icons">add_circle</i>
 										<span class="localize dialog_block_new">new section</span>
 									</label>
 									<input type="radio" name="dialogTools" value="format" id="dialogToolsOptionEffects" onclick="showDialogToolsEffects();">
 									<label for="dialogToolsOptionEffects" class="right" onmousedown="preventTextDeselectAndClick(event);" title="add special effects to selected text">
-										<i class="material-icons">text_format</i> 
+										<i class="material-icons">text_format</i>
 										<span class="localize dialog_effect_new">text effects</span>
 									</label>
 								</form>
@@ -1134,7 +1137,7 @@
 							<span class="localize gif_tool_name">record gif</span>
 						</div>
 					</div>
-					
+
 					<button title="start recording a gif of your game" class="color0" id="gifStartButton" onclick="startRecordingGif();">
 						<i class="material-icons">videocam</i>
 						<span class="localize gif_start">start recording</span>
@@ -1156,14 +1159,14 @@
 						<i class="material-icons">camera</i>
 						<span class="localize gif_snapshot">snapshot</span>
 					</button>
-					
+
 					<br/>
-					
+
 					<img width="300" id="gifPreview" style="display:none;" />
 					<div id="gifPlaceholder" style="display:block;background:#eee;width:300px;height:300px;"></div>
-					
+
 					<br/>
-					
+
 					<a title="download latest gif recording of your game" href="" download="recording.gif" id="gifDownload">
 						<i class="material-icons">file_download</i>
 						<span class="localize gif_download">download gif</span>
@@ -1182,7 +1185,7 @@
 							<span class="localize data_tool_name">game data</span>
 						</div>
 					</div>
-					<textarea title="raw text of the bitsy game data file (be careful when editing)" id="game_data" style="width:300px;height:300px;" onchange="on_game_data_change();"></textarea>
+					<textarea title="raw text of the bitsy game data file (be careful when editing)" id="bitsy_x2_data" style="width:300px;height:300px;" onchange="on_bitsy_x2_data_change();"></textarea>
 					<br>
 					<button title="reset everything and start new game" class="color0" onclick="newGameDialog();">
 						<i class="material-icons">restore_page</i>
@@ -1194,7 +1197,7 @@
 					</button>
 					<input type="checkbox" id="fontDataCheck" onclick="toggleFontDataVisibility(event);" />
 					<label title="show / hide font data (WARNING: can be very slow for large fonts)" for="fontDataCheck">
-						<i class="material-icons" id="fontDataIcon">visibility_off</i> 
+						<i class="material-icons" id="fontDataIcon">visibility_off</i>
 						<span class="localize font_data_toggle_visible">font data</span>
 					</label>
 				</div>
@@ -1314,7 +1317,7 @@
 <script type="bitsyGameData" id="defaultGameData">
 Write your game's title here
 
-# BITSY VERSION 5.2
+# BITSY VERSION 5.1
 
 ! ROOM_FORMAT 1
 
@@ -1343,48 +1346,79 @@ ROOM 0
 PAL 0
 
 TIL a
-11111111
-10000001
-10000001
-10011001
-10011001
-10000001
-10000001
-11111111
+0000000000000000
+0111111111111110
+0100000000000010
+0101111111111010
+0101000000001010
+0101010000101010
+0101001111001010
+0101001001001010
+0101001001001010
+0101001111001010
+0101010000101010
+0101000000001010
+0101111111111010
+0100000000000010
+0111111111111110
+0000000000000000
 
 SPR A
-00011000
-00011000
-00011000
-00111100
-01111110
-10111101
-00100100
-00100100
-POS 0 4,4
+0000000000000000
+0000000110000000
+0000001111000000
+0000001111000000
+0000000110000000
+0000011001100000
+0000111111110000
+0001101111011000
+0001001111001000
+0000101111010000
+0000001111000000
+0000001001000000
+0000001001000000
+0000001001000000
+0000010000100000
+0000000000000000
+POS 0 12,7
 
 SPR a
-00000000
-00000000
-01010001
-01110001
-01110010
-01111100
-00111100
-00100100
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0010001000000000
+0011011000001000
+0011111000000100
+0001101011000010
+0011111011100010
+0001110111110010
+0010001111110010
+0011111111110100
+0011011110110100
+0011011001111000
+0100100011000000
+0000000000000000
 DLG SPR_0
-POS 0 8,12
+POS 0 5,10
 
 ITM 0
-00000000
-00000000
-00000000
-00111100
-01100100
-00100100
-00011000
-00000000
-NAME tea
+0000000000000000
+0000000000000000
+0000000000000000
+0001111110000000
+0010000001000000
+0011111111100000
+0011111110111000
+0011111111011000
+0011111111001100
+0011111111001100
+0011111111011000
+0011111111111000
+0011111110100000
+0011111111000000
+0001111110000000
+0000000000000000
 DLG ITM_0
 
 DLG SPR_0

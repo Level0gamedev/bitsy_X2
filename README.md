@@ -1,7 +1,6 @@
-# Bitsy
-Bitsy is a little editor for games, worlds, or stories.
-The goal is to make it easy to make games where you can walk around and talk to people and be somewhere!
+# bitsy_X2
+a ~tiny~ slightly bigger text-based fantasy console
 
-# Bug reports
-If you find a bug in Bitsy, please submit [an issue here](https://github.com/le-doux/bitsy/issues).
-I am in the process of moving my bug backlog into github.
+Bitsy X2 is a hack of [Bitsy by Adam le Doux](https://ledoux.itch.io/bitsy) that changes the sprite size from 8x8 to 16x16 pixels. 
+
+You can use it in your browser on [itch](https://vonbednar.itch.io/bitsy-x2)
