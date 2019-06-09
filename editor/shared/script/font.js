@@ -86,15 +86,15 @@ function Font(fontData) {
 	var name = "unknown";
 	var width = 6; // default size so if you have NO font or an invalid font it displays boxes
 	var height = 8;
-	var fontdata = {};
-	var invalidCharData = [];
+	var chardata = {};
+	var invalidCharData = {};
 
 	this.getName = function() {
 		return name;
 	}
 
 	this.getData = function() {
-		return fontdata;
+		return chardata;
 	}
 
 	this.getWidth = function() {
@@ -107,19 +107,27 @@ function Font(fontData) {
 
 	this.hasChar = function(char) {
 		var codepoint = char.charCodeAt(0);
-		return fontdata[codepoint] != null;
+		return chardata[codepoint] != null;
 	}
 
 	this.getChar = function(char) {
 
 		var codepoint = char.charCodeAt(0);
 
-		if (fontdata[codepoint] != null) {
-			return fontdata[codepoint];
+		if (chardata[codepoint] != null) {
+			return chardata[codepoint];
 		}
 		else {
 			return invalidCharData;
 		}
+	}
+
+	this.allCharCodes = function() {
+		var codeList = [];
+		for (var code in chardata) {
+			codeList.push(code);
+		}
+		return codeList;
 	}
 
 	function parseFont(fontData) {
@@ -129,11 +137,17 @@ function Font(fontData) {
 		var lines = fontData.split("\n");
 
 		var isReadingChar = false;
+		var isReadingCharProperties = false;
 		var curCharLineCount = 0;
 		var curCharCode = 0;
 
 		for (var i = 0; i < lines.length; i++) {
 			var line = lines[i];
+
+			if (line[0] === "#") {
+				continue; // skip comment lines
+			}
+
 			if (!isReadingChar) {
 				// READING NON CHARACTER DATA LINE
 				var args = line.split(" ");
@@ -146,34 +160,84 @@ function Font(fontData) {
 				}
 				else if (args[0] == "CHAR") {
 					isReadingChar = true;
+					isReadingCharProperties = true;
+
 					curCharLineCount = 0;
 					curCharCode = parseInt(args[1]);
-					fontdata[curCharCode] = [];
+					chardata[curCharCode] = { 
+						width: width,
+						height: height,
+						offset: {
+							x: 0,
+							y: 0
+						},
+						spacing: width,
+						data: []
+					};
 				}
 			}
 			else {
-				// READING CHARACTER DATA LINE
-				for (var j = 0; j < width; j++)
-				{
-					fontdata[curCharCode].push( parseInt(line[j]) );
+				// CHAR PROPERTIES
+				if (isReadingCharProperties) {
+					var args = line.split(" ");
+					if (args[0].indexOf("CHAR_") == 0) { // Sub-properties start with "CHAR_"
+						if (args[0] == "CHAR_SIZE") {
+							// Custom character size - overrides the default character size for the font
+							chardata[curCharCode].width = parseInt(args[1]);
+							chardata[curCharCode].height = parseInt(args[2]);
+							chardata[curCharCode].spacing = parseInt(args[1]); // HACK : assumes CHAR_SIZE is always declared first
+						}
+						else if (args[0] == "CHAR_OFFSET") {
+							// Character offset - shift the origin of the character on the X or Y axis
+							chardata[curCharCode].offset.x = parseInt(args[1]);
+							chardata[curCharCode].offset.y = parseInt(args[2]);
+						}
+						else if (args[0] == "CHAR_SPACING") {
+							// Character spacing:
+							// specify total horizontal space taken up by the character
+							// lets chars take up more or less space on a line than its bitmap does
+							chardata[curCharCode].spacing = parseInt(args[1]);
+						}
+					}
+					else {
+						isReadingCharProperties = false;
+					}
 				}
 
-				curCharLineCount++;
-				if (curCharLineCount >= height) {
-					isReadingChar = false;
+				// CHAR DATA
+				if (!isReadingCharProperties) {
+					// READING CHARACTER DATA LINE
+					for (var j = 0; j < chardata[curCharCode].width; j++)
+					{
+						chardata[curCharCode].data.push( parseInt(line[j]) );
+					}
+
+					curCharLineCount++;
+					if (curCharLineCount >= height) {
+						isReadingChar = false;
+					}
 				}
 			}
 		}
 
 		// init invalid character box
-		invalidCharData = [];
+		invalidCharData = { 
+			width: width,
+			height: height,
+			offset: {
+				x: 0,
+				y: 0
+			},
+			spacing: width, // TODO : name?
+			data: []
+		};
 		for (var y = 0; y < height; y++) {
 			for (var x = 0; x < width; x++) {
 				if (x < width-1 && y < height-1) {
-					invalidCharData.push(1);
+					invalidCharData.data.push(1);
 				}
 				else {
-					invalidCharData.push(0);
+					invalidCharData.data.push(0);
 				}
 			}
 		}

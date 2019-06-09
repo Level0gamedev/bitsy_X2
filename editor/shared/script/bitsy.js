@@ -1,6 +1,6 @@
-var xhr;
+var xhr; // TODO : remove
 var canvas;
-var context;
+var context; // TODO : remove if safe?
 var ctx;
 
 var title = "";
@@ -18,6 +18,11 @@ var playerId = "A";
 
 var defaultFontName = "ascii_small";
 var fontName = defaultFontName;
+var TextDirection = {
+	LeftToRight : "LTR",
+	RightToLeft : "RTL"
+};
+var textDirection = TextDirection.LeftToRight;
 
 var names = {
 	room : new Map(),
@@ -30,38 +35,36 @@ var names = {
 function updateNamesFromCurData() {
 	names.room = new Map();
 	for(id in room) {
-		if(room[id].name != undefined && room[id].name != null)
+		if(room[id].name != undefined && room[id].name != null) {
 			names.room.set( room[id].name, id );
+		}
 	}
 	names.tile = new Map();
 	for(id in tile) {
-		if(tile[id].name != undefined && tile[id].name != null)
+		if(tile[id].name != undefined && tile[id].name != null) {
 			names.tile.set( tile[id].name, id );
+		}
 	}
 	names.sprite = new Map();
 	for(id in sprite) {
-		if(sprite[id].name != undefined && sprite[id].name != null)
+		if(sprite[id].name != undefined && sprite[id].name != null) {
 			names.sprite.set( sprite[id].name, id );
+		}
 	}
 	names.item = new Map();
 	for(id in item) {
-		if(item[id].name != undefined && item[id].name != null)
+		if(item[id].name != undefined && item[id].name != null) {
 			names.item.set( item[id].name, id );
+		}
 	}
 }
-
-//stores all image data for tiles, sprites, drawings
-var imageStore = {
-	source: {},
-	render: {}
-};
 
 var spriteStartLocations = {};
 
 /* VERSION */
 var version = {
-	major: 5, // for file format / engine changes
-	minor: 1 // for editor changes and bugfixes
+	major: 6, // major changes
+	minor: 0 // smaller changes
 };
 function getEngineVersion() {
 	return version.major + "." + version.minor;
@@ -75,6 +78,11 @@ function resetFlags() {
 	};
 }
 resetFlags(); //init flags on load script
+
+// SUPER hacky location... :/
+var editorDevFlags = {
+	// NONE right now!
+};
 
 function clearGameData() {
 	title = "";
@@ -93,11 +101,7 @@ function clearGameData() {
 	isEnding = false; //todo - correct place for this?
 	variable = {};
 
-	//stores all image data for tiles, sprites, drawings
-	imageStore = {
-		source: {},
-		render: {}
-	};
+	// TODO RENDERER : clear data?
 
 	spriteStartLocations = {};
 
@@ -109,6 +113,7 @@ function clearGameData() {
 	};
 
 	fontName = defaultFontName; // TODO : reset font manager too?
+	textDirection = TextDirection.LeftToRight;
 }
 
 var width = 256;
@@ -152,6 +157,8 @@ var onVariableChanged = null;
 
 var isPlayerEmbeddedInEditor = false;
 
+var renderer = new Renderer(tilesize, scale);
+
 function getGameNameFromURL() {
 	var game = window.location.hash.substring(1);
 	// console.log("game name --- " + game);
@@ -164,6 +171,7 @@ function attachCanvas(c) {
 	canvas.height = width * scale;
 	ctx = canvas.getContext("2d");
 	dialogRenderer.AttachContext(ctx);
+	renderer.AttachContext(ctx);
 }
 
 var curGameData = null;
@@ -185,7 +193,6 @@ function load_game(bitsy_x2_data, startWithTitle) {
 	dialogRenderer.SetFont(font);
 
 	setInitialVariables();
-	renderImages();
 
 	// setInterval(updateLoadingScreen, 300); // hack test
 
@@ -488,37 +495,45 @@ function update() {
 	var curTime = Date.now();
 	deltaTime = curTime - prevTime;
 
-	updateInput();
+	if (!transition.IsTransitionActive()) {
+		updateInput();
+	}
 
-	if (!isNarrating && !isEnding) {
-		updateAnimation();
-		drawRoom( room[curRoom] ); // draw world if game has begun
+	if (transition.IsTransitionActive()) {
+		// transition animation takes over everything!
+		transition.UpdateTransition(deltaTime);
 	}
 	else {
-		//make sure to still clear screen
-		ctx.fillStyle = "rgb(" + getPal(curPal())[0][0] + "," + getPal(curPal())[0][1] + "," + getPal(curPal())[0][2] + ")";
-		ctx.fillRect(0,0,canvas.width,canvas.height);
-	}
+		if (!isNarrating && !isEnding) {
+			updateAnimation();
+			drawRoom( room[curRoom] ); // draw world if game has begun
+		}
+		else {
+			//make sure to still clear screen
+			ctx.fillStyle = "rgb(" + getPal(curPal())[0][0] + "," + getPal(curPal())[0][1] + "," + getPal(curPal())[0][2] + ")";
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+		}
 
-	// if (isDialogMode) { // dialog mode
-	if(dialogBuffer.IsActive()) {
-		dialogRenderer.Draw( dialogBuffer, deltaTime );
-		dialogBuffer.Update( deltaTime );
-	}
-	else if (!isEnding) {
-		moveSprites();
-	}
+		// if (isDialogMode) { // dialog mode
+		if(dialogBuffer.IsActive()) {
+			dialogRenderer.Draw( dialogBuffer, deltaTime );
+			dialogBuffer.Update( deltaTime );
+		}
+		else if (!isEnding) {
+			moveSprites(); // TODO : I probably need to remove this..
+		}
 
-	// keep moving avatar if player holds down button
-	if( !dialogBuffer.IsActive() && !isEnding )
-	{
-		if( curPlayerDirection != Direction.None ) {
-			playerHoldToMoveTimer -= deltaTime;
+		// keep moving avatar if player holds down button
+		if( !dialogBuffer.IsActive() && !isEnding )
+		{
+			if( curPlayerDirection != Direction.None ) {
+				playerHoldToMoveTimer -= deltaTime;
 
-			if( playerHoldToMoveTimer <= 0 )
-			{
-				movePlayer( curPlayerDirection );
-				playerHoldToMoveTimer = 150;
+				if( playerHoldToMoveTimer <= 0 )
+				{
+					movePlayer( curPlayerDirection );
+					playerHoldToMoveTimer = 150;
+				}
 			}
 		}
 	}
@@ -526,13 +541,15 @@ function update() {
 	prevTime = curTime;
 
 	//for gif recording
-	if (didPlayerMoveThisFrame && onPlayerMoved != null) onPlayerMoved();
+	if (didPlayerMoveThisFrame && onPlayerMoved != null) {
+		onPlayerMoved();
+	}
 	didPlayerMoveThisFrame = false;
-	// if (didDialogUpdateThisFrame && onDialogUpdate != null) onDialogUpdate();
-	// didDialogUpdateThisFrame = false;
+
 	/* hacky replacement */
-	if (onDialogUpdate != null)
+	if (onDialogUpdate != null) {
 		dialogRenderer.SetPageFinishHandler( onDialogUpdate );
+	}
 
 	input.resetKeyPressed();
 	input.resetTapReleased();
@@ -547,8 +564,6 @@ function updateInput() {
 				if(!hasMoreDialog) {
 					// ignore currently held keys UNTIL they are released (stops player from insta-moving)
 					input.ignoreHeldKeys();
-
-					onExitDialog();
 				}
 			}
 			else {
@@ -805,6 +820,8 @@ var InputManager = function() {
 	}
 
 	this.ontouchstart = function(event) {
+		event.preventDefault();
+
 		if( event.changedTouches.length > 0 ) {
 			touchState.isDown = true;
 
@@ -816,6 +833,8 @@ var InputManager = function() {
 	}
 
 	this.ontouchmove = function(event) {
+		event.preventDefault();
+
 		if( touchState.isDown && event.changedTouches.length > 0 ) {
 			touchState.curX = event.changedTouches[0].clientX;
 			touchState.curY = event.changedTouches[0].clientY;
@@ -844,6 +863,8 @@ var InputManager = function() {
 	}
 
 	this.ontouchend = function(event) {
+		event.preventDefault();
+
 		touchState.isDown = false;
 
 		if( touchState.swipeDirection == Direction.None ) {
@@ -919,6 +940,8 @@ function movePlayer(direction) {
 
 	var ext = getExit( player().room, player().x, player().y );
 	var end = getEnding( player().room, player().x, player().y );
+	// TODO : vNext
+	// var eff = getEffect( player().room, player().x, player().y );
 	var itmIndex = getItemIndex( player().room, player().x, player().y );
 
 	// do items first, because you can pick up an item AND go through a door
@@ -946,14 +969,46 @@ function movePlayer(direction) {
 		startNarrating( ending[end.id], true /*isEnding*/ );
 	}
 	else if (ext) {
+		movePlayerThroughExit(ext);
+	}
+	// TODO : vNext
+	// else if (eff) {
+	// 	startDialog( script[eff.id].source, eff.id );
+	// }
+	else if (spr) {
+		startSpriteDialog( spr /*spriteId*/ );
+	}
+}
+
+var transition = new TransitionManager();
+
+function movePlayerThroughExit(ext) {
+	var GoToDest = function() {
+		if (ext.transition_effect != null) {
+			transition.BeginTransition(player().room, player().x, player().y, ext.dest.room, ext.dest.x, ext.dest.y, ext.transition_effect);
+			transition.UpdateTransition(0);
+		}
+
 		player().room = ext.dest.room;
 		player().x = ext.dest.x;
 		player().y = ext.dest.y;
 		curRoom = ext.dest.room;
-	}
-	else if (spr) {
-		startSpriteDialog( spr /*spriteId*/ );
-	}
+	};
+
+	// TODO : vNext
+	// if(ext.script_id != null && script[ext.script_id]){
+	// 	var scriptSourceStr = script[ext.script_id].source;
+	// 	startDialog(scriptSourceStr, ext.script_id, function(isExitUnlocked) {
+	// 		if (isExitUnlocked == true) {
+	// 			GoToDest();
+	// 		}
+	// 	});
+	// }
+	// else {
+	// 	GoToDest();
+	// }
+
+	GoToDest();
 }
 
 function getItemIndex( roomId, x, y ) {
@@ -1046,6 +1101,17 @@ function getEnding(roomId,x,y) {
 	return null;
 }
 
+// TODO : vNext
+// function getEffect(roomId,x,y) {
+// 	for (i in room[roomId].effects) {
+// 		var e = room[roomId].effects[i];
+// 		if (x == e.x && y == e.y) {
+// 			return e;
+// 		}
+// 	}
+// 	return null;
+// }
+
 function getTile(x,y) {
 	// console.log(x + " " + y);
 	var t = getRoom().tilemap[y][x];
@@ -1070,6 +1136,11 @@ function isSpriteOffstage(id) {
 }
 
 function parseWorld(file) {
+	// console.log("~~~ PARSE WORLD ~~~");
+	// console.log(file);
+
+	// var parseTimer = new Timer();
+
 	resetFlags();
 
 	var versionNumber = 0;
@@ -1117,11 +1188,18 @@ function parseWorld(file) {
 		else if (getType(curLine) === "END") {
 			i = parseEnding(lines, i);
 		}
+		// TODO: vNext
+		// else if (getType(curLine) === "PRG") {
+		// 	i = parseScript(lines, i);
+		// }
 		else if (getType(curLine) === "VAR") {
 			i = parseVariable(lines, i);
 		}
 		else if (getType(curLine) === "DEFAULT_FONT") {
 			i = parseFontName(lines, i);
+		}
+		else if (getType(curLine) === "TEXT_DIRECTION") {
+			i = parseTextDirection(lines, i);
 		}
 		else if (getType(curLine) === "FONT") {
 			i = parseFontData(lines, i);
@@ -1138,7 +1216,11 @@ function parseWorld(file) {
 		curRoom = player().room;
 	}
 
+	renderer.SetPalettes(palette);
+
 	// console.log(names);
+
+	// console.log("~~~~~ PARSE TIME " + parseTimer.Milliseconds());
 
 	return versionNumber;
 }
@@ -1163,6 +1245,10 @@ function serializeWorld(skipFonts) {
 	/* FONT */
 	if (fontName != defaultFontName) {
 		worldStr += "DEFAULT_FONT " + fontName + "\n";
+		worldStr += "\n"
+	}
+	if (textDirection != TextDirection.LeftToRight) {
+		worldStr += "TEXT_DIRECTION " + textDirection + "\n";
 		worldStr += "\n"
 	}
 	/* PALETTE */
@@ -1230,6 +1316,13 @@ function serializeWorld(skipFonts) {
 				var e = room[id].exits[j];
 				if ( isExitValid(e) ) {
 					worldStr += "EXT " + e.x + "," + e.y + " " + e.dest.room + " " + e.dest.x + "," + e.dest.y;
+					if (e.transition_effect != undefined && e.transition_effect != null) {
+						worldStr += " FX " + e.transition_effect;
+					}
+					// TODO : vNext
+					// if (e.script_id != undefined && e.script_id != null) {
+					// 	worldStr += " PRG " + e.script_id;
+					// }
 					worldStr += "\n";
 				}
 			}
@@ -1243,6 +1336,15 @@ function serializeWorld(skipFonts) {
 				worldStr += "\n";
 			}
 		}
+		// TODO : vNext
+		// if (room[id].effects.length > 0) {
+		// 	/* EFFECTS */
+		// 	for (j in room[id].effects) {
+		// 		var e = room[id].effects[j];
+		// 		worldStr += "EFF " + e.id + " " + e.x + "," + e.y;
+		// 		worldStr += "\n";
+		// 	}
+		// }
 		if (room[id].pal != null) {
 			/* PALETTE */
 			worldStr += "PAL " + room[id].pal + "\n";
@@ -1322,6 +1424,21 @@ function serializeWorld(skipFonts) {
 		worldStr += ending[id] + "\n";
 		worldStr += "\n";
 	}
+	// TODO : vNext
+	// /* SCRIPTS */
+	// for (id in script) {
+	// 	if (script[id].type == ScriptType.Dialogue) {
+	// 		worldStr += "DLG " + id + "\n";
+	// 	}
+	// 	else if (script[id].type == ScriptType.Ending) {
+	// 		worldStr += "END " + id + "\n";
+	// 	}
+	// 	else {
+	// 		worldStr += "PRG " + id + "\n";
+	// 	}
+	// 	worldStr += script[id].source + "\n";
+	// 	worldStr += "\n";
+	// }
 	/* VARIABLES */
 	for (id in variable) {
 		worldStr += "VAR " + id + "\n";
@@ -1338,16 +1455,17 @@ function serializeWorld(skipFonts) {
 }
 
 function serializeDrawing(drwId) {
+	var imageSource = renderer.GetImageSource(drwId);
 	var drwStr = "";
-	for (f in imageStore.source[drwId]) {
-		for (y in imageStore.source[drwId][f]) {
+	for (f in imageSource) {
+		for (y in imageSource[f]) {
 			var rowStr = "";
-			for (x in imageStore.source[drwId][f][y]) {
-				rowStr += imageStore.source[drwId][f][y][x];
+			for (x in imageSource[f][y]) {
+				rowStr += imageSource[f][y][x];
 			}
 			drwStr += rowStr + "\n";
 		}
-		if (f < (imageStore.source[drwId].length-1)) drwStr += ">\n";
+		if (f < (imageSource.length-1)) drwStr += ">\n";
 	}
 	return drwStr;
 }
@@ -1402,6 +1520,7 @@ function parseRoom(lines, i) {
 		walls : [],
 		exits : [],
 		endings : [],
+		// effects : [], // TODO vNext
 		items : [],
 		pal : null,
 		name : null
@@ -1497,8 +1616,29 @@ function parseRoom(lines, i) {
 					room : destName,
 					x : parseInt(destCoords[0]),
 					y : parseInt(destCoords[1])
-				}
+				},
+				transition_effect : null,
+				// TODO : vNext
+				// script_id : null,
 			};
+
+			// optional arguments
+			var exitArgIndex = 4;
+			while (exitArgIndex < exitArgs.length) {
+				if (exitArgs[exitArgIndex] == "FX") {
+					ext.transition_effect = exitArgs[exitArgIndex+1];
+					exitArgIndex += 2;
+				}
+				// TODO : vNext
+				// else if (exitArgs[exitArgIndex] == "PRG") {
+				// 	ext.script_id = exitArgs[exitArgIndex+1];
+				// 	exitArgIndex += 2;
+				// }
+				else {
+					exitArgIndex += 1;
+				}
+			}
+
 			room[id].exits.push(ext);
 		}
 		else if (getType(lines[i]) === "END") {
@@ -1512,6 +1652,18 @@ function parseRoom(lines, i) {
 			};
 			room[id].endings.push(end);
 		}
+		// TODO : vNext
+		// else if (getType(lines[i]) === "EFF") {
+		// 	/* ADD EFFECT */
+		// 	var effectId = getId( lines[i] );
+		// 	var effectCoords = getCoord( lines[i], 2 );
+		// 	var effect = {
+		// 		id : effectId,
+		// 		x : parseInt( effectCoords[0] ),
+		// 		y : parseInt( effectCoords[1] ),
+		// 	};
+		// 	room[id].effects.push(effect);
+		// }
 		else if (getType(lines[i]) === "PAL") {
 			/* CHOOSE PALETTE (that's not default) */
 			room[id].pal = getId(lines[i]);
@@ -1546,6 +1698,7 @@ function parsePalette(lines,i) { //todo this has to go first right now :(
 		i++;
 	}
 	palette[id] = {
+		id : id,
 		name : name,
 		colors : colors
 	};
@@ -1595,12 +1748,13 @@ function parseTile(lines, i) {
 
 	//tile data
 	tile[id] = {
+		id : id,
 		drw : drwId, //drawing id
 		col : colorIndex,
 		animation : {
-			isAnimated : (imageStore.source[drwId].length > 1),
+			isAnimated : (renderer.GetFrameCount(drwId) > 1),
 			frameIndex : 0,
-			frameCount : imageStore.source[drwId].length
+			frameCount : renderer.GetFrameCount(drwId)
 		},
 		name : name,
 		isWall : isWall
@@ -1665,6 +1819,7 @@ function parseSprite(lines, i) {
 
 	//sprite data
 	sprite[id] = {
+		id : id,
 		drw : drwId, //drawing id
 		col : colorIndex,
 		dlg : dialogId,
@@ -1673,9 +1828,9 @@ function parseSprite(lines, i) {
 		y : -1,
 		walkingPath : [], //tile by tile movement path (isn't saved)
 		animation : {
-			isAnimated : (imageStore.source[drwId].length > 1),
+			isAnimated : (renderer.GetFrameCount(drwId) > 1),
 			frameIndex : 0,
-			frameCount : imageStore.source[drwId].length
+			frameCount : renderer.GetFrameCount(drwId)
 		},
 		inventory : startingInventory,
 		name : name
@@ -1732,6 +1887,7 @@ function parseItem(lines, i) {
 
 	//item data
 	item[id] = {
+		id : id,
 		drw : drwId, //drawing id
 		col : colorIndex,
 		dlg : dialogId,
@@ -1739,9 +1895,9 @@ function parseItem(lines, i) {
 		// x : -1,
 		// y : -1,
 		animation : {
-			isAnimated : (imageStore.source[drwId].length > 1),
+			isAnimated : (renderer.GetFrameCount(drwId) > 1),
 			frameIndex : 0,
-			frameCount : imageStore.source[drwId].length
+			frameCount : renderer.GetFrameCount(drwId)
 		},
 		name : name
 	};
@@ -1759,8 +1915,8 @@ function parseDrawing(lines, i) {
 }
 
 function parseDrawingCore(lines, i, drwId) {
-	imageStore.source[drwId] = []; //init list of frames
-	imageStore.source[drwId].push( [] ); //init first frame
+	var frameList = []; //init list of frames
+	frameList.push( [] ); //init first frame
 	var frameIndex = 0;
 	var y = 0;
 	while ( y < tilesize ) {
@@ -1769,14 +1925,14 @@ function parseDrawingCore(lines, i, drwId) {
 		for (x = 0; x < tilesize; x++) {
 			row.push( parseInt( l.charAt(x) ) );
 		}
-		imageStore.source[drwId][frameIndex].push( row );
+		frameList[frameIndex].push( row );
 		y++;
 
 		if (y === tilesize) {
 			i = i + y;
 			if ( lines[i] != undefined && lines[i].charAt(0) === ">" ) {
 				// start next frame!
-				imageStore.source[drwId].push( [] );
+				frameList.push( [] );
 				frameIndex++;
 				//start the count over again for the next frame
 				i++;
@@ -1785,126 +1941,48 @@ function parseDrawingCore(lines, i, drwId) {
 		}
 	}
 
-	//console.log(imageStore.source[drwId]);
+	renderer.SetImageSource(drwId, frameList);
+
 	return i;
 }
 
-function renderImages() {
-	// console.log(" -- RENDER IMAGES -- ");
+// TODO : vNext
+// var ScriptType = {
+// 	Script : 0,
+// 	Dialogue : 1, // TODO : move everything to this spelling?
+// 	Ending : 2,
+// };
 
-	//init image store
-	for (pal in palette) {
-		imageStore.render[pal] = {
-			"1" : {}, //images with primary color index 1 (usually tiles)
-			"2" : {}  //images with primary color index 2 (usually sprites)
-		};
-	}
+function parseScript(lines, i, objectStore) {
+	// TODO : vNext
+	// if (scriptType === undefined || scriptType === null) {
+	// 	scriptType = ScriptType.Script;
+	// }
 
-	//render images required by sprites
-	for (s in sprite) {
-		var spr = sprite[s];
-		renderImageForAllPalettes( spr );
-	}
-	//render images required by tiles
-	for (t in tile) {
-		var til = tile[t];
-		renderImageForAllPalettes( til );
-	}
-	//render images required by tiles
-	for (i in item) {
-		var itm = item[i];
-		renderImageForAllPalettes( itm );
-	}
-}
-
-function renderImageForAllPalettes(drawing) {
-	// console.log("RENDER IMAGE");
-	for (pal in palette) {
-		// console.log(pal);
-
-		var col = drawing.col;
-		var colStr = "" + col;
-
-		// slightly hacky initialization of image store for palettes with more than 3 colors ~~~ SECRET FEATURE DO NOT USE :P ~~~
-		if(imageStore.render[pal][colStr] === undefined || imageStore.render[pal][colStr] === null) {
-			// console.log("UNDEFINED " + colStr);
-			imageStore.render[pal][colStr] = {};
-		}
-
-		// console.log(drawing);
-		// console.log(drawing.drw);
-		// console.log(imageStore);
-
-		var imgSrc = imageStore.source[ drawing.drw ];
-
-		if ( imgSrc.length <= 1 ) {
-			// non-animated drawing
-			var frameSrc = imgSrc[0];
-			// console.log(drawing);
-			// console.log(imageStore);
-			imageStore.render[pal][colStr][drawing.drw] = imageDataFromImageSource( frameSrc, pal, col );
-		}
-		else {
-			// animated drawing
-			var frameCount = 0;
-			for (f in imgSrc) {
-				var frameSrc = imgSrc[f];
-				var frameId = drawing.drw + "_" + frameCount;
-				imageStore.render[pal][colStr][frameId] = imageDataFromImageSource( frameSrc, pal, col );
-				frameCount++;
-			}
-		}
-	}
-}
-
-function imageDataFromImageSource(imageSource, pal, col) {
-	//console.log(imageSource);
-
-	var img = ctx.createImageData(tilesize*scale,tilesize*scale);
-	for (var y = 0; y < tilesize; y++) {
-		for (var x = 0; x < tilesize; x++) {
-			var px = imageSource[y][x];
-			for (var sy = 0; sy < scale; sy++) {
-				for (var sx = 0; sx < scale; sx++) {
-					var pxl = (((y * scale) + sy) * tilesize * scale * 4) + (((x*scale) + sx) * 4);
-					if ( px === 1 && getPal(pal).length > col ) {
-						img.data[pxl + 0] = getPal(pal)[col][0]; //ugly
-						img.data[pxl + 1] = getPal(pal)[col][1];
-						img.data[pxl + 2] = getPal(pal)[col][2];
-						img.data[pxl + 3] = 255;
-					}
-					else { //ch === 0
-						img.data[pxl + 0] = getPal(pal)[0][0];
-						img.data[pxl + 1] = getPal(pal)[0][1];
-						img.data[pxl + 2] = getPal(pal)[0][2];
-						img.data[pxl + 3] = 255;
-					}
-				}
-			}
-		}
-	}
-	return img;
-}
-
-function parseDialog(lines, i) {
 	var id = getId(lines[i]);
 	i++;
 
-	// TODO : use this for titles & endings too
-	var results = scriptInterpreter.ReadDialogScript(lines,i);
-	dialog[id] = results.script;
+	var results = scriptUtils.ReadDialogScript(lines,i);
+
+	// TODO : vNext
+	// script[id] = {
+	// 	source: results.script,
+	// 	type: scriptType,
+	// };
+
+	objectStore[id] = results.script;
+
 	i = results.index;
 
 	return i;
 }
 
+function parseDialog(lines, i) {
+	return parseScript(lines, i, dialog);
+}
+
 function parseEnding(lines, i) {
-	var id = getId(lines[i]);
-	i++;
-	var text = lines[i];
-	i++;
-	ending[id] = text;
-	return i;
+	return parseScript(lines, i, ending);
 }
 
 function parseVariable(lines, i) {
@@ -1918,6 +1996,12 @@ function parseVariable(lines, i) {
 
 function parseFontName(lines, i) {
 	fontName = getArg(lines[i], 1);
+	i++;
+	return i;
+}
+
+function parseTextDirection(lines, i) {
+	textDirection = getArg(lines[i], 1);
 	i++;
 	return i;
 }
@@ -1965,13 +2049,20 @@ function drawItem(img,x,y,context) {
 	drawTile(img,x,y,context); //TODO these methods are dumb and repetitive
 }
 
+// var debugLastRoomDrawn = "0";
+
 function drawRoom(room,context,frameIndex) { // context & frameIndex are optional
 	if (!context) { //optional pass in context; otherwise, use default (ok this is REAL hacky isn't it)
 		context = ctx;
 	}
 
+	// if (room.id != debugLastRoomDrawn) {
+	// 	debugLastRoomDrawn = room.id;
+	// 	console.log("DRAW ROOM " + debugLastRoomDrawn);
+	// }
+
 	//clear screen
-	context.fillStyle = "rgb(" + getPal(curPal())[0][0] + "," + getPal(curPal())[0][1] + "," + getPal(curPal())[0][2] + ")";
+	context.fillStyle = "rgb(" + getPal(room.pal)[0][0] + "," + getPal(room.pal)[0][1] + "," + getPal(room.pal)[0][2] + ")";
 	context.fillRect(0,0,canvas.width,canvas.height);
 
 	//draw tiles
@@ -2007,64 +2098,17 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 	}
 }
 
+// TODO : remove these get*Image methods
 function getTileImage(t,palId,frameIndex) {
-	if( frameIndex === undefined ) frameIndex = null; // no default parameter support on iOS
-
-	var drwId = t.drw;
-
-	if (!palId) palId = curPal(); // TODO : will this break on iOS?
-
-	if ( t.animation.isAnimated ) {
-		if (frameIndex != null) { // use optional provided frame index
-			// console.log("GET TILE " + frameIndex);
-			drwId += "_" + frameIndex;
-		}
-		else { // or the one bundled with the tile
-			drwId += "_" + t.animation.frameIndex;
-		}
-	}
-	return imageStore.render[ palId ][ t.col ][ drwId ];
+	return renderer.GetImage(t,palId,frameIndex);
 }
 
 function getSpriteImage(s,palId,frameIndex) {
-	if( frameIndex === undefined ) frameIndex = null; // no default parameter support on iOS
-
-	var drwId = s.drw;
-
-	if (!palId) palId = curPal();
-
-	if ( s.animation.isAnimated ) {
-		if (frameIndex != null) {
-			drwId += "_" + frameIndex;
-		}
-		else {
-			drwId += "_" + s.animation.frameIndex;
-		}
-	}
-
-	return imageStore.render[ palId ][ s.col ][ drwId ];
+	return renderer.GetImage(s,palId,frameIndex);
 }
 
-function getItemImage(itm,palId,frameIndex) { //aren't these all the same????
-	if( frameIndex === undefined ) frameIndex = null; // no default parameter support on iOS
-
-	var drwId = itm.drw;
-	// console.log(drwId);
-
-	if (!palId) palId = curPal();
-
-	if ( itm.animation.isAnimated ) {
-		if (frameIndex != null) {
-			drwId += "_" + frameIndex;
-		}
-		else {
-			drwId += "_" + itm.animation.frameIndex;
-		}
-	}
-
-	// console.log(imageStore.render[ palId ][ itm.col ]);
-	// console.log(imageStore.render[ palId ][ itm.col ][ drwId ]);
-	return imageStore.render[ palId ][ itm.col ][ drwId ];
+function getItemImage(itm,palId,frameIndex) {
+	return renderer.GetImage(itm,palId,frameIndex);
 }
 
 function curPal() {
@@ -2097,16 +2141,17 @@ var dialogRenderer = dialogModule.CreateRenderer();
 var dialogBuffer = dialogModule.CreateBuffer();
 var fontManager = new FontManager();
 
-function onExitDialog() {
-	// var breakShit = null;
-	// breakShit();
-	console.log("EXIT DIALOG");
+function onExitDialog(scriptResult, dialogCallback) {
 	isDialogMode = false;
 	if (isNarrating) isNarrating = false;
 	if (isDialogPreview) {
 		isDialogPreview = false;
 		if (onDialogPreviewEnd != null)
 			onDialogPreviewEnd();
+	}
+
+	if (dialogCallback != undefined && dialogCallback != null) {
+		dialogCallback(scriptResult);
 	}
 }
 
@@ -2146,13 +2191,11 @@ function startSpriteDialog(spriteId) {
 	}
 }
 
-function startDialog(dialogStr,scriptId) {
-	console.log("START DIALOG ");
-	console.log(dialogStr);
-
+function startDialog(dialogStr,scriptId,dialogCallback) {
+	// console.log("START DIALOG ");
 	if(dialogStr.length <= 0) {
-		console.log("ON EXIT DIALOG -- startDialog 1");
-		onExitDialog();
+		// console.log("ON EXIT DIALOG -- startDialog 1");
+		onExitDialog(dialogCallback);
 		return;
 	}
 
@@ -2163,19 +2206,20 @@ function startDialog(dialogStr,scriptId) {
 	dialogBuffer.Reset();
 	scriptInterpreter.SetDialogBuffer( dialogBuffer );
 
-	var onScriptEnd = function() {
-		if(!dialogBuffer.IsActive()){
-			console.log("ON EXIT DIALOG -- startDialog 2");
-			onExitDialog();
-		}
+	var onScriptEnd = function(scriptResult) {
+		dialogBuffer.OnDialogEnd(function() {
+			onExitDialog(scriptResult, dialogCallback);
+		});
 	};
 
 	if(scriptId === undefined) {
 		scriptInterpreter.Interpret( dialogStr, onScriptEnd );
 	}
 	else {
-		if( !scriptInterpreter.HasScript(scriptId) )
+		if( !scriptInterpreter.HasScript(scriptId) ) {
 			scriptInterpreter.Compile( scriptId, dialogStr );
+		}
+		scriptInterpreter.DebugVisualizeScriptTree(scriptId);
 		scriptInterpreter.Run( scriptId, onScriptEnd );
 	}
 

@@ -1,0 +1,15 @@
+heroku-server/*
+itch-version/*
+bitsy.sublime-project
+bitsy.sublime-workspace
+bitsy.zip
+electron-version/node_modules/*
+experiments/electron-version/node_modules/*
+src/node_modules/*
+npm-debug.log
+node_modules/*
+dist/*
+package-lock.json
+build/*
+cache/*
+experiments/node_modules/*

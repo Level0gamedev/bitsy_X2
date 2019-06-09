@@ -10,6 +10,8 @@ resources.load("script", "font.js");
 resources.load("script", "dialog.js");
 resources.load("script", "script.js");
 resources.load("script", "color_util.js");
+resources.load("script", "renderer.js");
+resources.load("script", "transition.js");
 
 
 /* exporting */
@@ -41,9 +43,11 @@ this.exportGame = function(gameData, title, pageColor, filename, isFixedSize, si
 	html = replaceTemplateMarker( html, "@@B", pageColor );
 
 	html = replaceTemplateMarker( html, "@@U", resources.get("color_util.js") );
+	html = replaceTemplateMarker( html, "@@X", resources.get("transition.js") );
 	html = replaceTemplateMarker( html, "@@F", resources.get("font.js") );
 	html = replaceTemplateMarker( html, "@@S", resources.get("script.js") );
 	html = replaceTemplateMarker( html, "@@L", resources.get("dialog.js") );
+	html = replaceTemplateMarker( html, "@@R", resources.get("renderer.js") );
 	html = replaceTemplateMarker( html, "@@E", resources.get("bitsy.js") );
 
 	// export the default font in its own script tag (TODO : remove if unused)

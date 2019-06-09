@@ -2,14 +2,39 @@
 	PAINT
 */
 
+// TODO --- this object kind of sucks????
 function DrawingId(type,id) { // TODO: is this the right name?
 	var self = this;
 
 	this.type = type;
 	this.id = id;
 
+	var imageSource = null;
+
 	this.getFrameData = function(frameIndex) {
-		return imageStore.source[ self.toString() ][ frameIndex ];
+		if (imageSource === null || imageSource === undefined) {
+			self.reloadImageSource();
+		}
+
+		return imageSource[ frameIndex ];
+	}
+
+	this.reloadImageSource = function() {
+		if (renderer === null || renderer === undefined) {
+			return;
+		}
+
+		// TODO RENDERER : pass in renderer?
+		imageSource = (renderer.GetImageSource( self.toString() )).slice();
+		console.log(imageSource);
+	}
+
+	this.updateImageSource = function() {
+		if (imageSource === null || imageSource === undefined) {
+			return;
+		}
+
+		renderer.SetImageSource(self.toString(), imageSource);
 	}
 
 	this.toString = function() {
@@ -89,6 +114,8 @@ function PaintTool(canvas, roomTool) {
 	this.curDrawingFrameIndex = 0; // TODO eventually this can be internal
 	this.drawPaintGrid = true;
 
+	console.log("NEW PAINT TOOL");
+	console.log(renderer);
 	this.drawing = new DrawingId( TileType.Avatar, "A" );
 
 	this.explorer = null; // TODO: hacky way to tie this to a paint explorer -- should use events instead
@@ -157,13 +184,13 @@ function PaintTool(canvas, roomTool) {
 		console.log("?????");
 		if (isPainting) {
 			isPainting = false;
-			renderImages();
+			updateDrawingData();
 			refreshGameData();
 			roomTool.drawEditMap(); // TODO : events instead of direct coupling
 
 			// if( Ed().platform == PlatformType.Desktop ) {
 				if(self.explorer != null) {
-					self.explorer.RenderThumbnail( self.drawing.id )
+					self.explorer.RenderThumbnail( self.drawing.id );
 				}
 				if( self.isCurDrawingAnimated )
 					renderAnimationPreview( roomTool.drawing.id );
@@ -241,11 +268,18 @@ function PaintTool(canvas, roomTool) {
 		return self.drawing.getFrameData(frameIndex);
 	}
 
+	// TODO : rename?
+	function updateDrawingData() {
+		self.drawing.updateImageSource();
+	}
+
 	// methods for updating the UI
 	this.onReloadTile = null;
 	this.onReloadSprite = null;
 	this.onReloadItem = null;
 	this.reloadDrawing = function() {
+		self.drawing.reloadImageSource();
+
 		if ( self.drawing.type === TileType.Tile) {
 			if(self.onReloadTile)
 				self.onReloadTile();
@@ -378,7 +412,7 @@ function PaintTool(canvas, roomTool) {
 				delete tile[ self.drawing.id ];
 				findAndReplaceTileInAllRooms( self.drawing.id, "0" );
 				refreshGameData();
-				renderImages();
+				// TODO RENDERER : refresh images
 				roomTool.drawEditMap();
 				nextTile();
 			}
@@ -393,7 +427,7 @@ function PaintTool(canvas, roomTool) {
 				delete sprite[ self.drawing.id ];
 
 				refreshGameData();
-				renderImages();
+				// TODO RENDERER : refresh images
 				roomTool.drawEditMap();
 				nextSprite();
 			}
@@ -408,7 +442,7 @@ function PaintTool(canvas, roomTool) {
 
 				removeAllItems( self.drawing.id );
 				refreshGameData();
-				renderImages();
+				// TODO RENDERER : refresh images
 				roomTool.drawEditMap();
 				nextItem();
 				updateInventoryItemUI();

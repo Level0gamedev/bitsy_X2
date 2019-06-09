@@ -73,6 +73,14 @@ input[type=radio]:checked + label {
 	background: #ccccff;
 }
 
+.controlBox input[type=checkbox] + label {
+	background: #ccccff;
+}
+
+.controlBox input[type=checkbox]:checked + label {
+	background: #6767b2;
+}
+
 .buttonGroup {
 	background: none;
 }
@@ -151,4 +159,16 @@ button:disabled {
 .highlighted {
 	background: #6767b2;
 	color: white;
+}
+
+.filePickerLabel {
+	background: #e8e8ff;
+	color: #6767b2;
+}
+.controlBox .filePickerLabel {
+	background: #ccccff;
+}
+.filePickerLabel:active {
+	background: #6767b2;
+	color:white;
 }

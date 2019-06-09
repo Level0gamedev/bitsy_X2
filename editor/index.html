@@ -2,29 +2,35 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>Bitsy_X2</title>
+		<title>Bitsy HD</title>
 		<link rel="icon" type="image/png" href="shared/image/cat5.png" />
 
 		<!-- STYLES -->
 		<link rel="stylesheet" type="text/css" href="shared/style/editorStyle.css">
 		<link rel="stylesheet" type="text/css" href="shared/style/editorButtons.css">
 		<link rel="stylesheet" type="text/css" href="shared/style/editorColors.css">
+		<link rel="stylesheet" type="text/css" href="shared/style/editorLanguageStyles.css">
 		<link rel="stylesheet" type="text/css" href="shared/style/editorAnimations.css">
 		<link rel="stylesheet" type="text/css" href="shared/style/colorPickerStyle.css">
+		<link rel="stylesheet" type="text/css" href="shared/style/markerToolStyle.css">
 
 		<!-- UTIL SCRIPTS -->
 		<script src="shared/script/color_util.js"></script>
 
 		<!-- ENGINE SCRIPTS -->
 		<script src="shared/script/font.js"></script>
+		<script src="shared/script/transition.js"></script>
 		<script src="shared/script/script.js"></script>
 		<script src="shared/script/dialog.js"></script>
+		<script src="shared/script/parser.js"></script>
+		<script src="shared/script/renderer.js"></script>
 		<script src="shared/script/bitsy.js"></script>
 
 		<!-- NEW EDITOR SCRIPTS (WIP) -->
 		<script src="shared/script/editor/core.js"></script>
 		<script src="shared/script/editor/paint.js"></script>
 		<script src="shared/script/editor/room.js"></script>
+		<script src="shared/script/editor/room_markers.js"></script>
 		<script src="shared/script/editor/explorer.js"></script>
 		<script src="shared/script/editor/localization.js"></script>
 
@@ -37,6 +43,7 @@
 		<!-- FONTS -->
 		<link href="shared/style/googleNunito.css" rel="stylesheet">
 		<link href="shared/style/googleMaterialIcons.css" rel="stylesheet">
+
 	</head>
 
 	<body onload="start()">
@@ -57,7 +64,7 @@
 					</div>
 
 					<div id="titleFlexItem">
-						<input title="title text for your game" type="text" id="titleText" onchange="on_change_title(event);" value="Write your game's title here" placeholder="Title" style="width:100%;">
+						<input title="title text for your game" type="text" id="titleText" class="gameTextDir" onchange="on_change_title(event);" value="Write your game's title here" placeholder="Title" style="width:100%;">
 					</div>
 
 					<div id="toolsCheckFlexItem">
@@ -101,15 +108,9 @@
 				</label>
 
 				<input type="checkbox" value="exitsPanel" id="exitsCheck" onclick="togglePanelAnimated(event);" />
-				<label title="show / hide exits window" for="exitsCheck" class="notMobile">
+				<label title="show / hide exits & endings window" for="exitsCheck" class="notMobile">
 					<i class="material-icons">directions</i>
-					<span class="localize exits_tool_name">exits</span>
-				</label>
-
-				<input type="checkbox" value="endingsPanel" id="endingsCheck" onclick="togglePanelAnimated(event);" />
-				<label title="show / hide endings window" for="endingsCheck" class="notMobile">
-					<i class="material-icons">place</i>
-					<span class="localize endings_tool_name">endings</span>
+					<span class="localize marker_tool_name">exits & endings</span>
 				</label>
 
 				<input type="checkbox" value="paintPanel" id="paintCheck" onclick="togglePanelAnimated(event);"  checked/>
@@ -207,13 +208,13 @@
 
 				<div id="aboutPanel" class="panel color0">
 					<div class="bar color0">
-						<button title="minimize about window" class="light" style="float:right;" onclick="hidePanel('aboutPanel');">
+						<button title="minimize about window" class="light panelBarClose" onclick="hidePanel('aboutPanel');">
 							<i class="material-icons">close</i>
 						</button>
 						<div title="about window" class="panelBarTitle" onmousedown="grabCard(event);">
 							<i class="material-icons">favorite</i>
 							<span class="localize about_tool_title">about bitsy</span>
-							 v5.1
+							 <span class="curVersionLabel"></span>
 						</div>
 					</div>
 					<div id="aboutInner">
@@ -223,14 +224,14 @@
 
 						<p>
 							<span class="localize about2">not sure where to start? try this helpful </span>
-							<a target="_blank" href="http://www.clairemorleyart.com/a-bitsy-tutorial">
+							<a target="_blank" href="https://www.shimmerwitch.space/bitsyTutorial.html">
 								<span class="localize about3_link_tutorial">bitsy tutorial!</span>
 							</a>
 						</p>
 
 						<p>
 							<span class="localize about4">if you need inspiration, you can </span>
-							<a target="_blank" href="https://itch.io/c/90743/bitsy-games">
+							<a target="_blank" href="https://itch.io/games/made-with-bitsy">
 								<span class="localize about5_link_games">play other bitsy games.</span>
 							</a>
 							<span class="localize about6">you can find many on </span>
@@ -305,7 +306,7 @@
 								<p>
 									<span class="localize instructions12">if you want to talk about bitsy, report a bug, or share a game you made, i'm on twitter </span>
 									<a href="https://www.twitter.com/adamledoux" target="_blank">
-										<span class="localize instructions13_link_twitter">@adamledoux</span>
+										<span class="localize instructions13_link_twitter" style="direction:ltr; unicode-bidi:bidi-override;">@adamledoux</span>
 									</a>
 									<span class="localize instructions14"> or you can post in the </span>
 									<a href="https://ledoux.itch.io/bitsy/community" target="_blank">
@@ -335,39 +336,24 @@
 							<input type="checkbox" id="versionNotesCheck" onclick="toggleVersionNotes(event);"/>
 							<label title="show / hide version notes" for="versionNotesCheck">
 								<span class="localize version_notes_title">what's new in</span>
-								 v5.1
+								 <span class="curVersionLabel"></span>
 								<i id="versionNotesCheckIcon" class="material-icons">expand_less</i>
 							</label>
 
-							<div id="versionNotes" style="display:none;">
+							<div id="versionNotes" style="display:none; direction:ltr">
 								<br>
-								5.1:<br>
-								- perf improvement: hide font data in game data by default<br>
-								--- added toggle button to show/hide font data<br>
-								- bugfix: avatar moved after leaving dialog<br>
-								- bugfix: too many keys being ignored after leaving dialog<br>
-								<br>
-								5.0:<br>
-								- editor translated into French, Portuguese, Spanish, Italian, Swedish, German<br>
-								***** huge thanks to the translators *****<br>
-								Peter Februar & Dorian Beaugendre (French)<br>
-								Bruno Silva (Portuguese)<br>
-								Marina Díez (Spanish & Italian)<br>
-								Em (Swedish)<br>
-								Kai Werder & Matthias Löwe (German)<br>
-								******************************************<br>
-								- new fonts to display European and Asian characters<br>
-								- new settings panel!<br>
-								- functions to add drawings to dialog: {printSprite}, {printTile}, {printItem}<br>
-								- {print} function replaces deprecated {say} function<br>
-								- downloaded game uses game title for file name<br>
-								- when creating animations, the second frame starts as a copy of the first<br>
-								- touch controls work on whole exported page, not just the game window<br>
-								- you can download game data as separate ".bitsy" file<br>
-								- bugfix: reset didn't reset game title<br>
-								- bugfix: player got stuck moving in one direction<br>
-								- bugfix: sometimes game window blinked in editor during play<br>
-								<!-- TODO : add volunteer names -->
+								6.0:<br>
+								- new combined exits & endings tool!<br>
+								- exits are two-way by default<br>
+								- change exit direction with one button<br>
+								- new exit transition animations!<br>
+								- exit thumbnails are shortcut to rooms<br>
+								- toggle exits & endings visibility<br>
+								- move exits & endings in room without tool open<br>
+								- move exits & endings in two ways:<br>
+								-- click and drag in the room<br>
+								-- OR use the "move" button<br>
+								- updated translations for several languages<br>
 							</div>
 						</div>
 					</div>
@@ -375,7 +361,7 @@
 
 				<div id="roomPanel" class="panel">
 					<div class="bar">
-						<button title="minimize room editing window" class="light" style="float:right;" onclick="hidePanel('roomPanel');">
+						<button title="minimize room editing window" class="light panelBarClose" onclick="hidePanel('roomPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -417,10 +403,10 @@
 
 								</span>
 								<button title="previous room" class="color0" onclick="prevRoom();">
-									<i class="material-icons">navigate_before</i>
+									<i class="navigate_before material-icons"><span>navigate_before</span></i>
 								</button>
 								<button title="next room" class="color0" onclick="nextRoom();">
-									<i class="material-icons">navigate_next</i>
+									<i class="navigate_next material-icons"><span>navigate_next</span></i>
 								</button>
 							</div>
 
@@ -435,6 +421,16 @@
 									<i class="material-icons">remove_circle</i>
 								</button>
 							</div>
+
+							<div id="roomColor" class="buttonGroup">
+								<span class="localize palette_tool_name">colors</span>:
+								<select title="select color palette for room" id="roomPaletteSelect" onchange="roomPaletteChange(event);">
+									<option value="0">palette 0</option> <!-- other options are added dynamically -->
+								</select>
+							</div>
+
+							<br>
+
 							<div id="roomVisibility" class="buttonGroup">
 								<input type="checkbox" id="roomGridCheck" onclick="toggleMapGrid(event);" checked/>
 								<label title="show / hide grid" for="roomGridCheck">
@@ -447,26 +443,19 @@
 									<i class="material-icons" id="roomWallsIcon">visibility_off</i>
 									<span class="localize walls_toggle_visible">walls</span>
 								</label>
+
+								<input type="checkbox" id="roomMarkersCheck" onclick="toggleRoomMarkers(event.target.checked);" checked/>
+								<label title="show / hide exits & endings" for="roomMarkersCheck">
+									<i class="material-icons" id="roomMarkersIcon">visibility</i>
+									<span class="localize marker_tool_name">exits & endings</span>
+								</label>
 							</div>
 
-							<br>
-
-							<div id="roomExits" class="buttonGroup">
-								<button title="add exits from this room to other rooms" class="color0" onclick="showPanel('exitsPanel');">
+							<div id="roomMarkers" class="buttonGroup">
+								<button title="add exits and endings" class="color0" onclick="showPanel('exitsPanel');">
 									<i class="material-icons">open_in_new</i>
-									<span class="localize room_add_exits">add exits</span>
+									<span class="localize room_add_markers">add exits & endings</span>
 								</button>
-								<button title="add endings" class="color0" onclick="showPanel('endingsPanel');">
-									<i class="material-icons">open_in_new</i>
-									<span class="localize room_add_endings">add endings</span>
-								</button>
-							</div>
-
-							<div id="roomColor" class="buttonGroup">
-								<span class="localize palette_tool_name">colors</span>:
-								<select title="select color palette for room" id="roomPaletteSelect" onchange="roomPaletteChange(event);">
-									<option value="0">palette 0</option> <!-- other options are added dynamically -->
-								</select>
 							</div>
 						</div>
 
@@ -478,88 +467,197 @@
 				<div id="exitsPanel" class="panel color3" style="display:none;">
 					<div class="bar color3">
 
-						<button title="minimize exits window" class="light" style="float:right;" onclick="hidePanel('exitsPanel');">
+						<button title="minimize exits & endings window" class="light panelBarClose" onclick="hidePanel('exitsPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
-						<div title="exits window" class="panelBarTitle" onmousedown="grabCard(event);">
+						<div title="exits & endings window" class="panelBarTitle" onmousedown="grabCard(event);">
 							<i class="material-icons">directions</i>
-							<span class="localize exits_tool_name">exits</span>
+							<span class="localize marker_tool_name">exits & endings</span>
 						</div>
 					</div>
-					<button title="create new exit and place it in the current room" class="color0" onclick="addExit();" id="addExitButton">
-						<i class="material-icons">location_searching</i>
-						<span class="localize exit_new">place new exit</span>
-					</button>
-					<span id="addingExitHelpText" style="display:none;"><i>click space in room to add exit</i></span>
-					<!-- todo needs a cancel button -->
-					<div title="edit selected exit" id="editSelectedExit" class="controlBox">
-						<u><span class="localize exit_selected">selected exit</span></u><br>
-						<div id="noExitSelected">
-							<i><span class="localize exit_selected_none">no exit selected</span></i>
+					<div id="exitsPanelContent">
+						<div id="noMarkerMessage" class="controlBox">
+							<span class="localize marker_tool_empty">There are no exits or endings in this room yet! You can add one with this tool. :)</span>
 						</div>
-						<div id="exitSelected" style="display:none;">
-							<span class="localize exit_destination">this exit goes to</span>:
-							<select title="choose which room the selected exit goes to" id="exitDestinationSelect" onchange="exitDestinationRoomChange(event);">
-								<option value="0">room 0</option> <!-- other options are added dynamically -->
-							</select>
-							<br>
-							<canvas title="click to place exit destination in selected room" id="exitCanvas"></canvas>
-							<br>
-							<button title="delete selected exit" class="color0" onclick="deleteSelectedExit();">
-								<i class="material-icons">remove</i>
-								<span class="localize exit_delete">delete selected exit</span>
-							</button>
+						<div id="markersSelect">
+							<div id="markerControl1" class="controlBox">
+								<span id="markerName1">marker 1</span>
+								<canvas id="markerCanvas1" title="location of marker (click to go to room)" onclick="selectMarkerRoom1();"></canvas>
+								<div class="markerPosControl">
+									<input type="checkbox" id="toggleMoveMarker1" onclick="toggleMoveMarker1(event);" />
+									<label for="toggleMoveMarker1" title="click to move marker">
+										<i class="material-icons">location_searching</i>
+										<span id="textMoveMarker1" class="localize marker_move">move</span>
+									</label>
+									<button id="cancelMoveMarker1" title="cancel move" onclick="cancelMoveMarker1();">
+										<i class="material-icons">cancel</i>
+									</button>
+									<div title="marker coordinates">
+										<span id="textMarkerPos1">room 0 (0,0)</span>
+									</div>
+									<div>
+										<span id="textMoveMessage1">
+											<i class="localize marker_move_click">click in room</i>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div id="markerLinkControl">
+								<button title="change exit direction" onclick="changeExitDirection();">
+									<i class="material-icons" id="exitDirectionBackIcon">arrow_back</i>
+									<i class="material-icons" id="exitDirectionForwardIcon">arrow_forward</i>
+								</button>
+							</div>
+							<div id="markerControl2" class="controlBox" style="display: flex; flex-direction: column;">
+								<span id="markerName2">marker 2</span>
+								<canvas id="markerCanvas2" title="location of marker (click to go to room)" onclick="selectMarkerRoom2();"></canvas>
+								<div class="markerPosControl">
+									<input type="checkbox" id="toggleMoveMarker2" onclick="toggleMoveMarker2(event);" />
+									<label for="toggleMoveMarker2" title="click to move marker">
+										<i class="material-icons">location_searching</i>
+										<span id="textMoveMarker2"class="localize marker_move">move</span>
+									</label>
+									<button id="cancelMoveMarker2" title="cancel move" onclick="cancelMoveMarker2();">
+										<i class="material-icons">cancel</i>
+									</button>
+									<div title="marker coordinates">
+										<span id="textMarkerPos2">room 0 (0,0)</span>
+									</div>
+									<div>
+										<span id="textMoveMessage2">
+											<i class="localize marker_move_click">click in room</i>
+										</span>
+									</div>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
+						<div id="markersControls" class="controlBox">
+							<div id="markersNav" class="buttonGroup">
+								<button title="previous" class="color0" onclick="prevMarker();">
+									<i class="navigate_before material-icons"><span>navigate_before</span></i>
+								</button>
+								<button title="next" class="color0" onclick="nextMarker();" style="margin-left:-5px;">
+									<i class="navigate_next material-icons"><span>navigate_next</span></i>
+								</button>
+								<button title="delete" class="color0" onclick="deleteMarker();">
+									<i class="material-icons">remove_circle</i>
+								</button>
+							</div>
+							<div id="markersAddCommands" class="buttonGroup">
+								<button title="add exit" class="color0" onclick="newExit();">
+									<i class="material-icons">add</i> <span class="localize exit_label">exit</span>
+								</button>
+								<button title="add ending" class="color0" onclick="newEnding();">
+									<i class="material-icons">add</i> <span class="localize ending_label">ending</span>
+								</button>
+								<!-- <button title="add scripted effect" class="color0" onclick="newEffect();">
+									<i class="material-icons">add</i> effect
+								</button> -->
+							</div>
+						</div>
+						<div id="markerOptions">
+							<div id="endingOptions" class="controlBox">
+								<span class="localize ending_dialog">ending dialog</span>
+								<br/>
+								<textarea title="text to show on ending" id="endingText" onchange="onEndingTextChange(event);" onkeydown="onEndingTextChange(event);" onkeyup="onEndingTextChange(event);"></textarea>
+							</div>
+							<!-- <div id="effectOptions" class="controlBox">
+								<span>effect script</span>
+								<br/>
+								<textarea id="effectText" onchange="onEffectTextChange(event);" onkeydown="onEffectTextChange(event);" onkeyup="onEffectTextChange(event);" style="resize: vertical; width: 32ch;"></textarea>
+							</div> -->
+							<div id="exitOptions" class="controlBox">
+								<input type="checkbox" id="showExitOptionsCheck" onclick="onToggleExitOptions();" />
+								<label title="show / hide exit options" for="showExitOptionsCheck">
+									<span class="localize exit_options">exit options</span>
+									<i class="material-icons" id="showExitOptionsCheckIcon">expand_less</i>
+								</label>
 
-				<div id="endingsPanel" class="panel color3" style="display:none;">
-					<div class="bar color3">
+								<div id="exitOptionsInner">
+									<form id="exitOptionsRadio">
+										<input type="radio" name="exit options select" value="exit1" onclick="onChangeExitOptionsSelect(event.target.value);" id="exitOptions1" checked>
+										<label title="show exit 1 options" for="exitOptions1" class="left">
+											<span class="localize exit_label">exit</span>
+										</label>
 
-						<button title="minimize endings window" class="light" style="float:right;" onclick="hidePanel('endingsPanel');">
-							<i class="material-icons">close</i>
-						</button>
+										<input type="radio" name="exit options select" value="exit2" onclick="onChangeExitOptionsSelect(event.target.value);" id="exitOptions2">
+										<label title="show exit 2 options" for="exitOptions2" class="right">
+											<span class="localize exit_return_label">return exit</span>
+										</label>
+									</form>
 
-						<div title="endings window" class="panelBarTitle" onmousedown="grabCard(event);">
-							<i class="material-icons">place</i>
-							<span class="localize endings_tool_name">endings</span>
+									<div style="padding:4px;">
+										<div title="select transition effect" class="controlBox" style="font-size:14px;">
+											<span class="localize exit_transition_label">transition effect</span>:
+											<select id="exitTransitionEffectSelect" onchange="onChangeExitTransitionEffect(event.target.value);">
+												<option value="none">none</option>
+												<option value="fade_w">fade (white)</option>
+												<option value="fade_b">fade (black)</option>
+												<option value="wave">wave</option>
+												<option value="tunnel">tunnel</option>
+												<option value="slide_u">slide up</option>
+												<option value="slide_d">slide down</option>
+												<option value="slide_l">slide left</option>
+												<option value="slide_r">slide right</option>
+											</select>
+										</div>
+
+										<!-- <div style="margin-bottom: 5px; margin-top: 12px;">
+											<span id="exitScriptOptions">
+												<input type="checkbox" id="exitDialogCheck" onchange="setElementClass('exitScriptControls','exitDialogActive',event.target.checked);"/>
+												<label for="exitDialogCheck">
+													<i class="material-icons">chat</i>
+													dialog
+												</label>
+
+												<input type="checkbox" id="exitChangeAvatarCheck" onchange="setElementClass('exitScriptControls','exitAvatarActive',event.target.checked);"/>
+												<label for="exitChangeAvatarCheck">
+													<i class="material-icons">nature_people</i>
+													change avatar
+												</label>
+
+												<input type="checkbox" id="exitLockCheck" onchange="setElementClass('exitScriptControls','exitLockActive',event.target.checked);"/>
+												<label for="exitLockCheck">
+													<i class="material-icons">vpn_key</i>
+													lock
+												</label>
+											</span>
+										</div> -->
+
+										<!-- <div id="exitScriptControls" class="controlBox">
+											<span class="exitLockControl">unlock door if:</span>
+											<br class="exitLockControl"/>
+
+											<span class="exitDialogAndLockControl">dialog when door is locked:</span>
+											<br class="exitDialogAndLockControl"/>
+											<textarea class="exitDialogAndLockControl" style="resize: vertical; width: 32ch;"></textarea>
+											<br class="exitDialogAndLockControl"/>
+
+											<span class="exitDialogControl">dialog</span><span class="exitDialogAndLockControl"> when door is unlocked</span><span class="exitDialogControl">:</span>
+											<br class="exitDialogControl"/>
+											<textarea class="exitDialogControl" style="resize: vertical; width: 32ch;"></textarea>
+											<br class="exitDialogControl"/>
+
+											<span class="exitAvatarControl">on enter, change avatar sprite to:</span>
+											<br class="exitAvatarControl"/>
+											<select class="exitAvatarControl">
+												<option>sprite A</option>
+												<option>sprite a</option>
+											</select>
+										</div> -->
+									</div>
+								</div>
+
+							</div>
 						</div>
-					</div>
-					<textarea title="text displayed on player reaching this ending" id="endingText" class="dialogTextArea" onkeydown="on_change_ending();" onkeyup="on_change_ending();" onchange="on_change_ending();"></textarea>
-					<div id="endingNav">
-						<div class="buttonGroup">
-							<span class="localize ending_label">ending</span> <span id="endingId">0</span>
-							<button title="previous ending" class="color0" onclick="prevEnding();">
-								<i class="material-icons">navigate_before</i>
-							</button>
-							<button title="next ending" class="color0" onclick="nextEnding();">
-								<i class="material-icons">navigate_next</i>
-							</button>
-							<button title="add new ending" class="color0" onclick="newEnding();">
-								<i class="material-icons">add</i>
-							</button>
-						</div>
-						<!-- <button onclick="deleteEnding();"> x delete x </button> -->
-					</div>
-					<div class="buttonGroup">
-						<button title="click to place ending in current room" class="color0" id="addEndingButton" onclick="addEnding();">
-							<i class="material-icons">location_searching</i>
-							<span class="localize ending_place">place ending</span>
-						</button>
-						<span id="addingEndingHelpText" class="localize ending_place_help" style="display:none;">click space in room to add ending</span>
-					<!-- todo needs a cancel button -->
-						<button title="remove selected ending from room" class="color0" id="removeEndingButton" onclick="removeSelectedEnding();" style="display:none;">
-							<i class="material-icons">location_disabled</i>
-							<span class="localize ending_remove">remove selected ending</span>
-						</button>
 					</div>
 				</div>
 
 				<div id="paintPanel" class="panel color1">
 					<div class="bar color1">
 
-						<button title="minimize paint window" class="light" style="float:right;" onclick="hidePanel('paintPanel');">
+						<button title="minimize paint window" class="light panelBarClose" onclick="hidePanel('paintPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -598,11 +696,11 @@
 					<br>
 					<div id="paintEditMain">
 						<div id="paintNav" class="buttonGroup">
-							<button title="next drawing" class="color0" onclick="prev();">
-								<i class="material-icons">navigate_before</i>
+							<button title="previous drawing" class="color0" onclick="prev();">
+								<i class="navigate_before material-icons"><span>navigate_before</span></i>
 							</button>
-							<button title="previous drawing" class="color0" onclick="next();" style="margin-left:-5px;">
-								<i class="material-icons">navigate_next</i>
+							<button title="next drawing" class="color0" onclick="next();" style="margin-left:-5px;">
+								<i class="navigate_next material-icons"><span>navigate_next</span></i>
 							</button>
 							<button title="find drawing: browse list of all drawings" class="color0" onclick="showPanel('paintExplorerPanel');">
 								<i class="material-icons">search</i>
@@ -656,7 +754,7 @@
 							<i class="material-icons">open_in_new</i>
 						</button>
 						<br>
-						<textarea title="dialog text will be displayed when player approaches this sprite" id="dialogText" class="dialogTextArea" onkeydown="on_change_dialog();" onkeyup="on_change_dialog();" onchange="on_change_dialog_finished();"></textarea> <!-- rows="2" cols="32" -->
+						<textarea title="dialog text will be displayed when player approaches this sprite" id="dialogText" class="dialogTextArea gameTextDir" onkeydown="on_change_dialog();" onkeyup="on_change_dialog();" onchange="on_change_dialog_finished();"></textarea> <!-- rows="2" cols="32" -->
 					</div>
 
 					<div id="animationOuter" class="controlBox">
@@ -696,7 +794,7 @@
 				<div id="paintExplorerPanel" class="panel color1">
 					<div class="bar color1">
 
-						<button title="minimize find drawing window" class="light" style="float:right;" onclick="hidePanel('paintExplorerPanel');">
+						<button title="minimize find drawing window" class="light panelBarClose" onclick="hidePanel('paintExplorerPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -758,7 +856,7 @@
 				<div id="colorsPanel" class="panel color1">
 					<div class="bar color1">
 
-						<button title="minimize color palette window" class="light" style="float:right;" onclick="hidePanel('colorsPanel');">
+						<button title="minimize color palette window" class="light panelBarClose" onclick="hidePanel('colorsPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -816,10 +914,10 @@
 
 							<div class="buttonGroup" id="paletteNav">
 								<button title="previous color palette" class="color0" onclick="prevPalette();">
-									<i class="material-icons">navigate_before</i>
+									<i class="navigate_before material-icons"><span>navigate_before</span></i>
 								</button>
 								<button title="next color palette" class="color0" onclick="nextPalette();">
-									<i class="material-icons">navigate_next</i>
+									<i class="navigate_next material-icons"><span>navigate_next</span></i>
 								</button>
 								<button title="add new color palette" class="color0" onclick="newPalette();">
 									<i class="material-icons">add</i>
@@ -832,7 +930,7 @@
 				<div id="dialogPanel" class="panel color3">
 					<div class="bar color3">
 
-						<button title="minimize dialog window" class="light" style="float:right;" onclick="hidePanel('dialogPanel');">
+						<button title="minimize dialog window" class="light panelBarClose" onclick="hidePanel('dialogPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -949,7 +1047,7 @@
 				<div id="inventoryPanel" class="panel color3">
 					<div class="bar color3">
 
-						<button title="minimize inventory window" class="light" style="float:right;" onclick="hidePanel('inventoryPanel');">
+						<button title="minimize inventory window" class="light panelBarClose" onclick="hidePanel('inventoryPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -985,7 +1083,7 @@
 				<div id="downloadPanel" class="panel color2">
 					<div class="bar color2">
 
-						<button title="minimize download window" class="light" style="float:right;" onclick="hidePanel('downloadPanel');">
+						<button title="minimize download window" class="light panelBarClose" onclick="hidePanel('downloadPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -1007,7 +1105,11 @@
 					<div class="notMobile">
 						<span class="localize import_html">import game from html file:</span>
 						<br>
-						<input title="import game from html file on your computer" type="file" onchange="importGameFromFile(event);"/>
+						<label for="importGamePicker" class="filePickerLabel" title="import game from html file on your computer">
+							<i class="material-icons">file_upload</i>
+							<span class="localize upload_game">upload game</span>
+						</label>
+						<input type="file" id="importGamePicker" style="visibility:hidden;width:0px;" onchange="importGameFromFile(event);"/>
 					</div>
 
 					<!-- TODO LOCALIZE - word wrap -->
@@ -1026,7 +1128,7 @@
 				<div id="gifPanel" class="panel color2" style="display:none;">
 					<div class="bar color2">
 
-						<button title="minimize gif recording window" class="light" style="float:right;" onclick="hidePanel('gifPanel');">
+						<button title="minimize gif recording window" class="light panelBarClose" onclick="hidePanel('gifPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -1074,7 +1176,7 @@
 				<div id="dataPanel" class="panel color0" style="display:none;">
 					<div class="bar color0">
 
-						<button title="minimize game data window" class="light" style="float:right;" onclick="hidePanel('dataPanel');">
+						<button title="minimize game data window" class="light panelBarClose" onclick="hidePanel('dataPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -1103,7 +1205,7 @@
 				<div id="settingsPanel" class="panel color0" style="display:none;">
 					<div class="bar color0">
 
-						<button title="minimize settings window" class="light" style="float:right;" onclick="hidePanel('settingsPanel');">
+						<button title="minimize settings window" class="light panelBarClose" onclick="hidePanel('settingsPanel');">
 							<i class="material-icons">close</i>
 						</button>
 
@@ -1160,6 +1262,7 @@
 								<option value="unicode_european_small" class="localize font_unicode_european_small">Unicode European Small</option>
 								<option value="unicode_european_large" class="localize font_unicode_european_large">Unicode European Large</option>
 								<option value="unicode_asian" class="localize font_unicode_asian">Unicode Asian</option>
+								<option value="arabic" class="localize font_arabic">Arabic</option>
 								<option value="custom">Custom Font - none</option> <!-- TODO : localize -->
 							</select>
 							<div id="ascii_small_description" style="font-size: 14px;">
@@ -1174,15 +1277,34 @@
 							<div id="unicode_asian_description" style="font-size: 14px;">
 								<span class="localize font_unicode_asian_description">Large font which includes characters for Asian languages such as Chinese, Japanese, and Korean.</span>
 							</div>
+							<div id="arabic_description" style="font-size: 14px;">
+								<span class="localize font_arabic_description">Pixel font with Arabic characters</span>
+							</div>
 							<div id="custom_description" style="font-size: 14px;">
 								<span class="localize font_custom_description">Upload your own custom font in the ".bitsyfont" format!</span>
 								<br/>
-								<input title="import font from bitsyfont file on your computer" type="file" onchange="importFontFromFile(event);"/>
+								<label for="importFontPicker" class="filePickerLabel" title="import font from bitsyfont file on your computer">
+									<i class="material-icons">file_upload</i>
+									<span class="localize upload_font">upload font</span>
+								</label>
+								<input title="import font from bitsyfont file on your computer" type="file" id="importFontPicker" style="visibility:hidden;width:0px;" onchange="importFontFromFile(event);"/>
 							</div>
-							<button title="download font file" class="color0" onclick="exportFont();">
-								<i class="material-icons">file_download</i>
-								<span class="localize download_font">download font</span>
-							</button>
+							<div style="margin-top:3px;">
+								<button title="download font file" class="color0" onclick="exportFont();">
+									<i class="material-icons">file_download</i>
+									<span class="localize download_font">download font</span>
+								</button>
+							</div>
+							<div>
+								<span class="localize text_direction_label">text direction</span>:
+								<select id="textDirectionSelect" onchange="on_change_text_direction(event);">
+									<option value="LTR" class="localize text_direction_ltr">Left to Right</option>
+									<option value="RTL" class="localize text_direction_rtl">Right to Left</option>
+								</select>
+							</div>
+							<div style="font-size: 14px">
+								<span class="localize text_direction_description">Option for languages that read right to left</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1191,6 +1313,123 @@
 		</div> <!-- Editor Window -->
 
 		</div>
+
+<script type="bitsyGameData" id="defaultGameData">
+Write your game's title here
+
+# BITSY VERSION 5.1
+
+! ROOM_FORMAT 1
+
+PAL 0
+0,82,204
+128,159,255
+255,255,255
+
+ROOM 0
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,a,a,a,a,a,a,a,a,a,a,a,a,a,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,0,0,0,0,0,0,0,0,0,0,0,0,a,0
+0,a,a,a,a,a,a,a,a,a,a,a,a,a,a,0
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+PAL 0
+
+TIL a
+0000000000000000
+0111111111111110
+0100000000000010
+0101111111111010
+0101000000001010
+0101010000101010
+0101001111001010
+0101001001001010
+0101001001001010
+0101001111001010
+0101010000101010
+0101000000001010
+0101111111111010
+0100000000000010
+0111111111111110
+0000000000000000
+
+SPR A
+0000000000000000
+0000000110000000
+0000001111000000
+0000001111000000
+0000000110000000
+0000011001100000
+0000111111110000
+0001101111011000
+0001001111001000
+0000101111010000
+0000001111000000
+0000001001000000
+0000001001000000
+0000001001000000
+0000010000100000
+0000000000000000
+POS 0 12,7
+
+SPR a
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0010001000000000
+0011011000001000
+0011111000000100
+0001101011000010
+0011111011100010
+0001110111110010
+0010001111110010
+0011111111110100
+0011011110110100
+0011011001111000
+0100100011000000
+0000000000000000
+DLG SPR_0
+POS 0 5,10
+
+ITM 0
+0000000000000000
+0000000000000000
+0000000000000000
+0001111110000000
+0010000001000000
+0011111111100000
+0011111110111000
+0011111111011000
+0011111111001100
+0011111111001100
+0011111111011000
+0011111111111000
+0011111110100000
+0011111111000000
+0001111110000000
+0000000000000000
+DLG ITM_0
+
+DLG SPR_0
+I'm a cat
+
+DLG ITM_0
+You found a nice warm cup of tea
+
+VAR a
+42
+</script>
 
 	</body>
 

@@ -1,336 +1,12 @@
 /*
-POST 5.0 TODOs:
-X fix move on end dialog bug
-icelandic
-estonian
-arabic
-esperanto
-X bug where big fonts slow down re-writing the game data (toggle to show the font data?)
-	- cause: writing a ton of data into the game data text box
-		fixes: hide/show font in game data, make "async" re-write of textbox (will that work?)
-X asian font : NS_ERROR_DOM_QUOTA_REACHED: Persistent storage maximum size reached
-	- ideas: don't save fonts in the game data until download ... just store the names (note: could cause some bugs)
-
-POST 5.0 longer term:
-- desktop apps
-- homepage (bitsy.org)
-- arabic pixel font
-- scripting documentation
-- fix perf of game data box (async writing?)
-- perf of sprite selector
-- loading screen
-- controls screen
-- async loading
-- parsing module
-- game data object w/ event subscription
-- rendering module w/ image lookup methods
-- EXITS + rooms + script update
-- choice dialog
-- music editor
-
-Loading sprites
-- black or blue background?
-- how to store loading images? DRW?
--- DRW isn't preserved or rendered
----
-SPR a
-00000000
-00000000
-01010001
-01110001
-01110010
-01111100
-00111100
-00100100
-DLG SPR_0
-POS 0 5,7
-
-SPR b
-00000000
-00000000
-00100000
-00100000
-00111000
-00100100
-00100100
-00111000
-POS 0 6,7
-
-SPR c
-00000000
-00000000
-00000000
-00010000
-00000000
-00010000
-00010000
-00011000
-POS 0 7,7
-
-SPR d
-00000000
-00000000
-00010000
-00010000
-00111000
-00010000
-00010000
-00011000
-POS 0 8,7
-
-SPR e
-00000000
-00000000
-00000000
-00011100
-00100000
-00011000
-00000100
-00111000
-POS 0 9,7
-
-SPR f
-00000000
-00000000
-00000000
-00010100
-00010100
-00010100
-00001000
-00110000
-POS 0 10,7
----
-
-TEST desktop editor:
-- feature: drag tools past edge of window
-- feature: visual room select
-- feature: copy sprites w/ room
-- bug: duplicate drawing -> weird thumbnail formatting
-
 TODO:
-make branch off of: https://github.com/le-doux/bitsy/commit/e2ab6cb15ac328ad9cd596edcfc6c89e2caed2b4
-https://stackoverflow.com/questions/7167645/how-do-i-create-a-new-git-branch-from-an-old-commit
-
-CONFIRMED BUGS
-- iOS editor is broken again
-- bug with mobile (iOS safari) not loading itch games every time
-- animation bugs: https://twitter.com/skodone/status/942019687550017542
-
-TODO: touch controls
-X figure out scaling (_test windows / android)
-X rename touch event handlers
-- need more feedback for swiping controls (partial swipe, bump, select character)
-X swipe movements are too large
-
-SPOTTED BUGS
-- start a new game, old dialog sticks around (no repro)
-- need to improve UI to teach how new dialog works
-- bug with room names? (investigate)
-- confusing that you can't add new items in the inventory window (rename them too?)
-- becklespinax: Not sure what causes it but sometimes when writing dialogue that uses the new text effects I'll go to play the scene and it won't fire the dialogue attached to the sprite when interacted with. (no repro yet)
-- weird ghost tiles in exit map
-- overlapping entrance & exit things on regular map
-- ending undefined bug (how repro?)
-- but sometimes when pushing an arrow key just once, the avatar will keep moving in the direction until it runs into a wall/sprite
-
-NEW FEATURE IDEAS
-- plugin
-- import / export tiles
-- editor behaves odd in playtest mode -- disable more stuff (and make it more clear!)
-- need newlines in endings
-
-NOTES WHILE GETTING READY TO RELEASE
-- need to redo GIF recording (snapshots, animation, text effects)
-
-Notes on controlled walking
-- need to respond to direction buttons even if you haven't lifted all the other buttons
-
-Other notes / feature ideas
-- string demarcation in programming language
-- comments for programming language
-- documentation for programming language
-- WASD / arrow keys should only control game when the game has focus?
-- not always clear when the editor is play-mode vs edit-mode (visuals? turn off editor controls? other?)
-- multiple avatars
-- multiple exits when you got different items
-- arrange windows more freely (vertical)
-- mobile version
-- better organization tools for tiles (e.g. naming, re-ordering them, grouping them (folders?), searching, etc.)
-- dialog when you change rooms
-- different color for character sprite vs everything else?
-- game ends after dialog from sprite (add to scripting)
-
-BUGS / FEEDBACK:
-* Thank you @adamledoux for Bitsy, it is so relaxing to use. Are you aware that in Safari deleted rooms do not disappear from the exit list?
-* @videodante: @adamledoux Hey! I was just wondering if it's possible to change the room size in bitsy, or if not, if you'd consider adding that?
---> e.g. changing size of tiles wld change room size to compensate & vice versa. basically a picker of room px, tile px, and num tiles.
-* mobile issues (ios)
-* hmm I need to add a setting to turn off mouse controls since it breaks more unconventional games
-* I also wonder, have you considered a more mobile friendly editor with vertically stacking collapsable tabs? I'd love to use bitsy on the go.
-* Thank you, That would be very helpful. On iOS and android you could replace it with a swipe to move like @increpare's puzzlescript.
-* finally inventory feature with branching becz it was so hard to do that now. If u can add the same sprite in diff scenes it will be great
-* mailing list for game jams?
-* Art: Non-english characters
-* Yukon: Endings on sprites
-* radiosoap: dialog portraits
-* Edited: 1) variables 2) map of connected rooms 3) transparent avatar background
-* Mimic: While working on the game, there were a few things I think would improve the editor. One would be the ability to copy sections within the map and paste it in other sections, so this would speed up tile placement. The second thing is the naming of the rooms and endings. It would have been nice to edit the names for the sake of organization. This as well as the ability to move the tiles in the find drawing window. Other then that, the editor helps make games quite quickly. :)
-* zetef: I really did not thought about that, but it would be cool if in the future update you can change the player's speed in a specific room, or all the rooms. I enjoyed your tool!
-* thetoolong: if a first time player of bitsy... and i like the top-down aspect. you should add more colors and some king of simple coding (like scratch) to make more complex games.
-* saranomy: Is it possible to add a dialog to the exit itself? So, when player walks into exit (teleport tile), it will force player to read important messages before going to the next room. This feature will add dialog box into "exits" window in the editor.
-* anoobus5 I was wondering if you could add a feature where you could link rooms, as creating 5-9 exits for each room gets tedious after a while.
-
-? music (how)
-
-NEW NOTES
-- can't put ending on top of sprite (should you be able to? trigger ending by talking to sprite)
-- a way to share tilesets would be cool
-
-v3.4 to do
-- show/hide animation on edit map
-
-NEW TODO
-- update TODOs from project and community
-- draggable entrances
-- iOS mobile bug
-- android freezing bug
-- ? default workspaces
-- drawing selector
-- aliases
-- better gif async
-- (publish gif library)
-
-new usability ideas
-- tiles in grid so you can see more
-- Oh and possibly a way to "toggle" the placement of endings or exits, so you can put multiples of the same one in a room without having to scroll up and so down to select it each time
-
-v3.1 bugs
-- prev/next and tile preview don't work together (old bug)
-
-editor UI problems to solve
-- unusable on mobile
-- gif UI is terrible and not findable
-- prev / next buttons everywhere are a pain to use if you have a lot of stuff
-- can't see all the tiles you want to work on
-- dialog UI could be improved
-- feedback for exits and ending creation is not good enough
-
-v4 features
-- refactor
-	- modularize engine
-		- engine
-		- renderer
-		- game-data
-		- parser
-		X font
-	- modularize editor
-		X exporter
-		- ???
-- re-do UI
-	- think through ALL existing features and how they work together (or not)
-	- make everything MORE VISIBLE
-
-
-TODO NOW
-- email leaf
-
-v5 candidate features
-- music / sfx tool
-- room map
-- fancier animations (transitions, arrow, walk?, etc)
-- character pathing (why am I the only one that wants this???)
-
-USABILITY THREAD
-- bug: nasty corruption bug still exists
-- bug: test things in firefox
-- bug: (firefox?) if you write dialog after placing a sprite, the textfield clears itself (no repro)
-- editable room names
-- line breaks for dialog
-- downloadable Bitsy (electron?)
-- RPG mechanics: enemies, items???
-- walls maintain wall status everywhere once checked (even when you add new rooms)
-	- maybe needs a file format change: a universal wall specifier that can be overridden?
-- music / sfx tool (bleepy bloopy piano track)
-	- http://marcgg.com/blog/2016/11/01/javascript-audio/#
-- dialog choices
-- dialog "reply" from your character
-- dialog changes with repetition
-- dialog branching
-- better support for side-scrolling games???? (e.g. gravity mode (jump? ramps? ladders?))
-from laura michet
-- map for rooms
-- want to see all my tiles at once
-- character limit on sprite dialog (sort of fixed with the dialog box textarea)
-
-my ideas
-- transition animations
-- walking animations
-- bobbing arrow animations
-- dialog open close animations
-- new pass on UI
-- new dialog editor / preview pane
-	- bigger dialog box textbox?
-
-- BUG: after play mode, avatar ends up in wrong room
-- name rooms, sprites, etc (esp rooms tho)
-- make it show/hide exits, instead of "add" exits
-- BUG: removing sprite from world doesn't work once you go back into playmode
-- BUG: exit highlighting is on by default when engine starts up?
-- ONGOING: decrease duplicate code between tile / sprites
-- selection box? copy paste?
-- would be cool to select sprites and then find out who they are / what they say?
-- how do extra characters end up in the room maps?
-
-now what?
-- sharing features in the games
-	- gif recording
-	- linkbacks to editor
-	- twitter api sharing
-	- link to bitsy list
-
-- add preview canvas for rooms
-- the UI is getting cluttered :(
-- is the skip dialog too easy? should I fast forward instead? use specific buttons? (maybe this should be playtested)
-
-from twitter
-- look at puzzlescript gist hosting of gamedata (from kool.tools)
-
-- async gif processings (IN PROGRESS)
-- undo / redo
-- improve color input for browsers that only accept text
-	- hash or no-hash hex
-	- rgb with commas
-- add instruction on publishing the game (itchio shoutout)
-
-- bug: some sort of bad things happen when you delete room 0
-
-
-TODO BACKLOG
-- export straight to itchio (is there a developer api?)
-- better icon for exits
-- character paths
-
-old ideas
-	#shortcut to sets?
-	#default tileset
-	#clear tilemap
-	#clear tileset
-	? animate player movement
-	? player face left/right
-	?? bouncing arrow
-	? sprite walking paths
-	?? narrative blocks
-	?? STRICT MODE where text can only fit on one page
-
-- room transition animations
-
-first bitsy tweet: https://twitter.com/adamledoux/status/787434344776241153
+- need to update the instructions panel
+- ???
 */
 
 /*
 NOTES
 - remember to run chrome like this to test "open /Applications/Google\ Chrome.app --args --allow-file-access-from-files"
-- useful for icon conversions: https://iconverticons.com/online/
 */
 
 var editMode = EditMode.Edit; // TODO : move to core.js?
@@ -440,11 +116,10 @@ var defaultPanelPrefs = {
 		{ id:"gifPanel", 			visible:false, 	position:5  },
 		{ id:"dataPanel", 			visible:false, 	position:6  },
 		{ id:"exitsPanel", 			visible:false, 	position:7  },
-		{ id:"endingsPanel", 		visible:false, 	position:8  },
 		{ id:"paintExplorerPanel",	visible:false,	position:9  },
 		{ id:"dialogPanel",			visible:false,	position:10 },
 		{ id:"inventoryPanel",		visible:false,	position:11 },
-		{ id:"settingsPanel",		visible:false,	position:11 }
+		{ id:"settingsPanel",		visible:false,	position:12 },
 	]
 };
 // console.log(defaultPanelPrefs);
@@ -453,10 +128,11 @@ function getPanelPrefs() {
 	// (TODO: weird that engine version and editor version are the same??)
 	var useDefaultPrefs = ( localStorage.engine_version == null ) ||
 							( localStorage.panel_prefs == null ) ||
-							( JSON.parse(localStorage.engine_version).major < 5 ) ||
+							( JSON.parse(localStorage.engine_version).major < 6 ) ||
 							( JSON.parse(localStorage.engine_version).minor < 0 );
-	console.log("USE DEFAULT?? " + useDefaultPrefs);
+
 	var prefs = useDefaultPrefs ? defaultPanelPrefs : JSON.parse( localStorage.panel_prefs );
+
 	// add missing panel prefs (if any)
 	// console.log(defaultPanelPrefs);
 	for( var i = 0; i < defaultPanelPrefs.workspace.length; i++ ) {
@@ -464,15 +140,16 @@ function getPanelPrefs() {
 		var panelPref = defaultPanelPrefs.workspace[i];
 		for( var j = 0; j < prefs.workspace.length; j++ )
 		{
-			if( prefs.workspace[j].id === panelPref.id )
+			if( prefs.workspace[j].id === panelPref.id ) {
 				isMissing = false;
+			}
 		}
+
 		if( isMissing ) {
-			console.log( "MISSING PREF " + panelPref.id );
 			prefs.workspace.push( panelPref );
 		}
 	}
-	console.log(prefs);
+
 	return prefs;
 }
 
@@ -492,6 +169,14 @@ function readUrlFlags() {
 function start() {
 	// Ed().platform = PlatformType.Mobile;
 
+	isPlayerEmbeddedInEditor = true; // flag for game player to make changes specific to editor
+
+	var versionLabelElements = document.getElementsByClassName("curVersionLabel");
+	for (var labelIndex in versionLabelElements) {
+		var versionLabel = versionLabelElements[labelIndex];
+		versionLabel.innerText = "v" + version.major + "." + version.minor;
+	}
+
 	// test
 	if(Ed().platform === PlatformType.Mobile) {
 		var head = document.getElementsByTagName("head")[0];
@@ -502,8 +187,9 @@ function start() {
 		head.appendChild(link);
 	}
 
-	if(Ed().platform === PlatformType.Desktop)
+	if(Ed().platform === PlatformType.Desktop) {
 		detectBrowserFeatures();
+	}
 
 	readUrlFlags();
 
@@ -528,13 +214,17 @@ function start() {
 	paintTool.onReloadSprite = function(){ reloadSprite() };
 	paintTool.onReloadItem = function(){ reloadItem() };
 
-	//exit destination canvas & context
-	exit_canvas = document.getElementById("exitCanvas");
-	exit_canvas.width = width * scale;
-	exit_canvas.height = width * scale;
-	exit_ctx = exit_canvas.getContext("2d");
-	//exit events
-	exit_canvas.addEventListener("mousedown", exit_onMouseDown);
+	// //exit destination canvas & context
+	// exit_canvas = document.getElementById("exitCanvas");
+	// exit_canvas.width = width * scale;
+	// exit_canvas.height = width * scale;
+	// exit_ctx = exit_canvas.getContext("2d");
+	// //exit events
+	// exit_canvas.addEventListener("mousedown", exit_onMouseDown);
+	markerTool = new RoomMarkerTool(document.getElementById("markerCanvas1"), document.getElementById("markerCanvas2") );
+	console.log("MARKER TOOL " + markerTool);
+
+	roomTool.markers = markerTool;
 
 	//
 	drawingThumbnailCanvas = document.createElement("canvas");
@@ -542,18 +232,19 @@ function start() {
 	drawingThumbnailCanvas.height = tilesize * scale;
 	drawingThumbnailCtx = drawingThumbnailCanvas.getContext("2d");
 
-
 	//load last auto-save
 	if (localStorage.bitsy_x2_data) {
 		//console.log("~~~ found old save data! ~~~");
 		//console.log(localStorage.bitsy_x2_data);
 		document.getElementById("bitsy_x2_data").value = localStorage.bitsy_x2_data;
 		on_bitsy_x2_data_change_core();
+	} else {
+		//setDefaultGameState(); todo needs porting from bitsy
 	}
-	else {
-		//console.log("~~~~ no old save data! ~~~~");
-		setDefaultGameState();
-	}
+
+	roomIndex = sortedRoomIdList().indexOf(curRoom);
+
+	markerTool.SetRoom(curRoom);
 
 	// load panel preferences
 	var prefs = getPanelPrefs();
@@ -562,8 +253,11 @@ function start() {
 	var editorContent = document.getElementById("editorContent");
 	for(i in sortedWorkspace) {
 		var panelSettings = sortedWorkspace[i];
-		togglePanelCore( panelSettings.id, panelSettings.visible, false /*doUpdatePrefs*/ );
-		editorContent.insertBefore( document.getElementById(panelSettings.id), null ); //insert on the left
+		var panelElement = document.getElementById(panelSettings.id);
+		if (panelElement != undefined && panelElement != null) {
+			togglePanelCore( panelSettings.id, panelSettings.visible, false /*doUpdatePrefs*/ );
+			editorContent.insertBefore( panelElement, null ); //insert on the left
+		}
 	}
 
 	// Automatically open tool trays that are needed
@@ -579,10 +273,11 @@ function start() {
 	//draw everything
 	on_paint_avatar();
 	paintTool.updateCanvas();
+	markerTool.Refresh();
 	roomTool.drawEditMap();
+
 	updateRoomPaletteSelect(); //dumb to have to specify this here --- wrap up room UI method?
 	updateRoomName(); // init the room UI
-	reloadEnding();
 
 	updateInventoryUI();
 
@@ -644,8 +339,6 @@ function start() {
 		);
 	};
 
-	isPlayerEmbeddedInEditor = true; // flag for game player to make changes specific to editor
-
 	// load custom font first, since it is synchronous
 	if (localStorage.custom_font != null) {
 		var fontStorage = JSON.parse(localStorage.custom_font);
@@ -657,7 +350,8 @@ function start() {
 		"ascii_small.bitsyfont",
 		"unicode_european_small.bitsyfont",
 		"unicode_european_large.bitsyfont",
-		"unicode_asian.bitsyfont"
+		"unicode_asian.bitsyfont",
+		"arabic.bitsyfont",
 	], function() {
 		console.log("ALL FONTS LOADED"); // TODO : happens multiple times because of hacky implementation :(
 		switchFont(fontName); // hack - make sure the engine font manager is setup too
@@ -678,6 +372,19 @@ function start() {
 		export_settings = JSON.parse( localStorage.export_settings );
 		document.getElementById("pageColor").value = export_settings.page_color;
 	}
+
+	// TODO : interesting idea but needs work!
+	// // try to honor state of all checkboxes from previous session
+	// var inputElements = document.getElementsByTagName("input");
+	// for (var i in inputElements) {
+	// 	if (inputElements[i].type === "checkbox") {
+	// 		var checkbox = inputElements[i];
+	// 		if (checkbox.checked) {
+	// 			console.log(checkbox);
+	// 			checkbox.dispatchEvent(new Event("click"));
+	// 		}
+	// 	}
+	// }
 }
 
 function newDrawing() {
@@ -703,25 +410,29 @@ function prevTile() {
 
 function updateRoomName() {
 	// document.getElementById("roomId").innerHTML = curRoom;
-	document.getElementById("roomName").placeholder = "room " + curRoom;
-	if(room[curRoom].name != null)
+	var roomLabel = localization.GetStringOrFallback("room_label", "room");
+	document.getElementById("roomName").placeholder = roomLabel + " " + curRoom;
+	if(room[curRoom].name != null) {
 		document.getElementById("roomName").value = room[curRoom].name;
-	else
+	}
+	else {
 		document.getElementById("roomName").value = "";
+	}
 }
 
 // TODO : consolidate these function and rename them something nicer
 function on_room_name_change() {
 	var str = document.getElementById("roomName").value;
-	if(str.length > 0)
+	if(str.length > 0) {
 		room[curRoom].name = str;
-	else
+	}
+	else {
 		room[curRoom].name = null;
+	}
 
 	updateNamesFromCurData()
 
 	refreshGameData();
-	updateExitOptionsFromGameData();
 }
 
 function on_drawing_name_change() {
@@ -741,15 +452,15 @@ function on_drawing_name_change() {
 
 	// make sure items referenced in scripts update their names
 	if(drawing.type === TileType.Item) {
-		console.log("SWAP ITEM NAMES");
+		// console.log("SWAP ITEM NAMES");
 
 		var ItemNameSwapVisitor = function() {
 			var didSwap = false;
 			this.DidSwap = function() { return didSwap; };
 
 			this.Visit = function(node) {
-				console.log("VISIT!");
-				console.log(node);
+				// console.log("VISIT!");
+				// console.log(node);
 
 				if( node.type != "function" || node.name != "item" )
 					return; // not the right type of node
@@ -768,22 +479,20 @@ function on_drawing_name_change() {
 		if(newName === null || newName === undefined) newName = drawing.id;
 		if(oldName === null || oldName === undefined) oldName = drawing.id;
 
-		console.log(oldName + " <-> " + newName);
+		// console.log(oldName + " <-> " + newName);
 
 		if(newName != oldName) {
 			for(dlgId in dialog) {
-				console.log("DLG " + dlgId);
+				// console.log("DLG " + dlgId);
 				var dialogScript = scriptInterpreter.Parse( dialog[dlgId] );
 				var visitor = new ItemNameSwapVisitor();
 				dialogScript.VisitAll( visitor );
 				if( visitor.DidSwap() ) {
-					console.log("SWAP!");
-					console.log(dialog[dlgId]);
 					var newDialog = dialogScript.Serialize();
-					if(newDialog.indexOf("\n") > -1)
+					if(newDialog.indexOf("\n") > -1) {
 						newDialog = '"""\n' + newDialog + '\n"""';
+					}
 					dialog[dlgId] = newDialog;
-					console.log(dialog[dlgId]);
 				}
 			}
 		}
@@ -811,10 +520,40 @@ function on_palette_name_change() {
 	updatePaletteOptionsFromGameData();
 }
 
+function selectRoom(roomId) {
+	console.log("SELECT ROOM " + roomId);
+
+	// ok watch out this is gonna be hacky
+	var ids = sortedRoomIdList();
+
+	var nextRoomIndex = -1;
+	for (var i = 0; i < ids.length; i++) {
+		if (ids[i] === roomId) {
+			nextRoomIndex = i;
+		}
+	}
+
+	if (nextRoomIndex != -1) {
+		roomIndex = nextRoomIndex;
+		curRoom = ids[roomIndex];
+		markerTool.SetRoom(curRoom);
+		roomTool.drawEditMap();
+		paintTool.updateCanvas();
+		updateRoomPaletteSelect();
+		paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
+
+		if (drawing.type === TileType.Tile)
+			updateWallCheckboxOnCurrentTile();
+
+		updateRoomName();
+	}
+}
+
 function nextRoom() {
 	var ids = sortedRoomIdList();
 	roomIndex = (roomIndex + 1) % ids.length;
 	curRoom = ids[roomIndex];
+	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
@@ -831,6 +570,7 @@ function prevRoom() {
 	roomIndex--;
 	if (roomIndex < 0) roomIndex = (ids.length-1);
 	curRoom = ids[roomIndex];
+	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
@@ -886,7 +626,8 @@ function duplicateRoom() {
 	// add new exit destination option to exits panel
 	var select = document.getElementById("exitDestinationSelect");
 	var option = document.createElement("option");
-	option.text = "room " + newRoomId;
+	var roomLabel = localization.GetStringOrFallback("room_label", "room");
+	option.text = roomLabel + " " + newRoomId;
 	option.value = newRoomId;
 	select.add(option);
 }
@@ -932,6 +673,7 @@ function newRoom() {
 		walls : [],
 		exits : [],
 		endings : [],
+		effects : [],
 		pal : "0",
 		items : []
 	};
@@ -939,6 +681,7 @@ function newRoom() {
 
 	curRoom = roomId;
 	//console.log(curRoom);
+	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
@@ -946,11 +689,12 @@ function newRoom() {
 	updateRoomName();
 
 	// add new exit destination option to exits panel
-	var select = document.getElementById("exitDestinationSelect");
-	var option = document.createElement("option");
-	option.text = "room " + roomId;
-	option.value = roomId;
-	select.add(option);
+	// var select = document.getElementById("exitDestinationSelect");
+	// var option = document.createElement("option");
+	// var roomLabel = localization.GetStringOrFallback("room_label", "room");
+	// option.text = roomLabel + " " + roomId;
+	// option.value = roomId;
+	// select.add(option);
 }
 
 function deleteRoom() {
@@ -981,7 +725,7 @@ function deleteRoom() {
 		roomTool.drawEditMap();
 		paintTool.updateCanvas();
 		updateRoomPaletteSelect();
-		updateExitOptionsFromGameData();
+		// updateExitOptionsFromGameData();
 		//recreate exit options
 	}
 }
@@ -1051,7 +795,7 @@ function duplicateDrawing() {
 	if (drawing.type == TileType.Tile) {
 
 		//copy drawing data
-		var sourceImageData = imageStore.source[ "TIL_" + drawing.id ];
+		var sourceImageData = renderer.GetImageSource( "TIL_" + drawing.id );
 		var copiedImageData = [];
 		for (f in sourceImageData) {
 			copiedImageData.push([]);
@@ -1085,7 +829,7 @@ function duplicateDrawing() {
 	else if(drawing.type == TileType.Avatar || drawing.type == TileType.Sprite) {
 
 		//copy drawing data -- hacky duplication as usual between sprite and tile :(
-		var sourceImageData = imageStore.source[ "SPR_" + drawing.id ];
+		var sourceImageData = renderer.GetImageSource( "SPR_" + drawing.id );
 		var copiedImageData = [];
 		for (f in sourceImageData) {
 			copiedImageData.push([]);
@@ -1115,7 +859,7 @@ function duplicateDrawing() {
 	else if(drawing.type == TileType.Item) {
 
 		//copy drawing data -- hacky duplication as usual between sprite and tile :(
-		var sourceImageData = imageStore.source[ "ITM_" + drawing.id ];
+		var sourceImageData = renderer.GetImageSource( "ITM_" + drawing.id );
 		var copiedImageData = [];
 		for (f in sourceImageData) {
 			copiedImageData.push([]);
@@ -1389,10 +1133,13 @@ function on_edit_mode() {
 	stopGame();
 	// TODO I should really do more to separate the editor's game-data from the engine's game-data
 	parseWorld(document.getElementById("bitsy_x2_data").value); //reparse world to account for any changes during gameplay
-	curRoom = sortedRoomIdList()[roomIndex]; //restore current room to pre-play state
-	roomTool.drawEditMap();
 
+	curRoom = sortedRoomIdList()[roomIndex]; //restore current room to pre-play state
+
+	roomTool.drawEditMap();
 	roomTool.listenEditEvents();
+
+	markerTool.RefreshKeepSelection();
 
 	updateInventoryUI();
 
@@ -1431,13 +1178,19 @@ function on_play_mode() {
 function updatePlayModeButton() {
 	document.getElementById("playModeCheck").checked = isPlayMode;
 	document.getElementById("playModeIcon").innerHTML = isPlayMode ? "stop" : "play_arrow";
-	document.getElementById("playModeText").innerHTML = isPlayMode ? "stop" : "play";
+
+	var stopText = localization.GetStringOrFallback("stop_game", "stop");
+	var playText = localization.GetStringOrFallback("play_game", "play");
+	document.getElementById("playModeText").innerHTML = isPlayMode ? stopText : playText;
 }
 
 function updatePreviewDialogButton() {
 	document.getElementById("previewDialogCheck").checked = isPreviewDialogMode;
 	document.getElementById("previewDialogIcon").innerHTML = isPreviewDialogMode ? "stop" : "play_arrow";
-	document.getElementById("previewDialogText").innerHTML = isPreviewDialogMode ? "stop" : "preview";
+
+	var stopText = localization.GetStringOrFallback("stop_game", "stop");
+	var previewText = localization.GetStringOrFallback("dialog_start_preview", "preview");
+	document.getElementById("previewDialogText").innerHTML = isPreviewDialogMode ? stopText : previewText;
 }
 
 function togglePaintGrid(e) {
@@ -1479,7 +1232,8 @@ function updatePaletteUI() {
 	// 	document.getElementById("paletteNav").style.display = "none";
 	// }
 
-	document.getElementById("paletteName").placeholder = "palette " + selectedColorPal();
+	var palettePlaceholderName = localization.GetStringOrFallback("palette_label", "palette");
+	document.getElementById("paletteName").placeholder = palettePlaceholderName + " " + selectedColorPal();
 	var name = palette[ selectedColorPal() ].name;
 	if( name )
 		document.getElementById("paletteName").value = name;
@@ -1495,7 +1249,7 @@ function updateRoomPaletteSelect() {
 	var palOptions = document.getElementById("roomPaletteSelect").options;
 	for (i in palOptions) {
 		var o = palOptions[i];
-		console.log(o);
+		// console.log(o);
 		if (o.value === curPal()) {
 			o.selected = true;
 		}
@@ -1512,8 +1266,11 @@ function changeColorPickerIndex(index) {
 
 function onPaletteChange() {
 	refreshGameData();
-	renderImages();
+
+	renderer.SetPalettes(palette);
+
 	paintTool.updateCanvas();
+	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
 	if( paintTool.isCurDrawingAnimated )
@@ -1530,9 +1287,10 @@ function updatePaletteOptionsFromGameData() {
 	}
 
 	// then, add an option for each room
+	var paletteLabel = localization.GetStringOrFallback("palette_label", "palette");
 	for (palId in palette) {
 		var option = document.createElement("option");
-		option.text = palette[palId].name ? palette[palId].name : "palette " + palId;
+		option.text = palette[palId].name ? palette[palId].name : paletteLabel + " " + palId;
 		option.value = palId;
 		option.selected = ( palId === room[ curRoom ].pal );
 		select.add(option);
@@ -1567,7 +1325,7 @@ function nextPalette() {
 }
 
 function newPalette() {
-	// create new ending and save the data
+	// create new palette and save the data
 	var id = nextPaletteId();
 	palette[ id ] = {
 		name : null,
@@ -1587,6 +1345,7 @@ function roomPaletteChange(event) {
 	var palId = event.target.value;
 	room[curRoom].pal = palId;
 	refreshGameData();
+	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
 	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
@@ -1831,6 +1590,7 @@ function on_bitsy_x2_data_change() {
 	refreshGameData();
 
 	// ui stuff
+	markerTool.Refresh(); // wow I hope this doesn't cause bugs
 	updateRoomName();
 	refreshGameData();
 }
@@ -1847,7 +1607,7 @@ function convertGameDataToCurVersion(importVersion) {
 				if ( node.type != "function" )
 					return;
 
-				console.log("VISIT " + node.name);
+				// console.log("VISIT " + node.name);
 
 				if ( node.name === "say" ) {
 					node.name = "print";
@@ -1857,18 +1617,15 @@ function convertGameDataToCurVersion(importVersion) {
 		};
 
 		for(dlgId in dialog) {
-			console.log("DLG " + dlgId);
 			var dialogScript = scriptInterpreter.Parse( dialog[dlgId] );
 			var visitor = new PrintFunctionVisitor();
 			dialogScript.VisitAll( visitor );
 			if( visitor.DidChange() ) {
-				console.log("CHANGE!");
-				console.log(dialog[dlgId]);
 				var newDialog = dialogScript.Serialize();
-				if(newDialog.indexOf("\n") > -1)
+				if(newDialog.indexOf("\n") > -1) {
 					newDialog = '"""\n' + newDialog + '\n"""';
+				}
 				dialog[dlgId] = newDialog;
-				console.log(dialog[dlgId]);
 			}
 		}
 
@@ -1938,7 +1695,7 @@ function on_bitsy_x2_data_change_core() {
 		makeItem( drawing.id );
 	}
 
-	renderImages();
+	// TODO RENDERER : refresh images
 
 	roomTool.drawEditMap();
 
@@ -1972,7 +1729,7 @@ function on_bitsy_x2_data_change_core() {
 
 	updateFontSelectUI();
 
-	updateExitOptionsFromGameData();
+	markerTool.SetRoom(curRoom);
 
 	document.getElementById("titleText").value = title;
 }
@@ -1997,13 +1754,15 @@ function updateFontSelectUI() {
 	}
 
 	updateFontDescriptionUI();
+	updateTextDirectionSelectUI(); // a bit hacky but probably ok?
+	updateEditorTextDirection(textDirection); // EXTREMELY hack :(
 }
 
 function updateFontDescriptionUI() {
 	for (var i in fontSelect.options) {
 		var fontOption = fontSelect.options[i];
 		var fontDescriptionId = fontOption.value + "_description";
-		console.log(fontDescriptionId);
+		// console.log(fontDescriptionId);
 		var fontDescription = document.getElementById(fontDescriptionId);
 		if (fontDescription != null) {
 			fontDescription.style.display = fontOption.selected ? "block" : "none";
@@ -2012,28 +1771,7 @@ function updateFontDescriptionUI() {
 }
 
 function updateExitOptionsFromGameData() {
-	console.log("UPDATE EXIT OPTIONS");
-
-	var select = document.getElementById("exitDestinationSelect");
-
-	// first, remove all current options
-	var i;
-	for(i = select.options.length - 1 ; i >= 0 ; i--) {
-		select.remove(i);
-	}
-
-	// then, add an option for each room
-	for (roomId in room) {
-		var option = document.createElement("option");
-		if(room[roomId].name != null)
-			option.text = room[roomId].name;
-		else
-			option.text = "room " + roomId;
-		option.value = roomId;
-		select.add(option);
-	}
-
-	updateRoomChoiceForSelectedExit();
+	// TODO ???
 }
 
 function on_toggle_wall(e) {
@@ -2098,176 +1836,116 @@ function toggleVersionNotes(e) {
 	document.getElementById("versionNotesCheckIcon").innerHTML = e.target.checked ? "expand_more" : "expand_less";
 }
 
-/* EXITS */
-var isAddingExit = false;
-var selectedExit = null;
-var exit_canvas;
-var exit_ctx;
-var selectedExitRoom = "0";
+/* MARKERS (exits & endings) */
+var markerTool;
 
-function resetExitVars() {
-	isAddingExit = false;
-	setSelectedExit(null);
-}
-
-function showExits() {
-	console.log("show exits");
-	resetExitVars();
-	roomTool.areExitsVisible = true;
+function newExit() {
+	markerTool.AddExit();
 	roomTool.drawEditMap();
-	drawExitDestinationRoom();
 }
 
-function hideExits() {
-	console.log("hide exits");
-	resetExitVars();
-	roomTool.areExitsVisible = false;
+function newEnding() {
+	markerTool.AddEnding();
 	roomTool.drawEditMap();
-	drawExitDestinationRoom();
 }
 
-function addExit() { //todo rename something less vague
-	isAddingExit = true;
-	setSelectedExit(null);
-	setSelectedEnding(null);
-	document.getElementById("addExitButton").style.display = "none";
-	document.getElementById("addingExitHelpText").style.display = "block";
+function newEffect() {
+	markerTool.AddEffect();
+	roomTool.drawEditMap();
 }
 
-function addExitToCurRoom(x,y) {
-	isAddingExit = false;
-	document.getElementById("addExitButton").style.display = "block";
-	document.getElementById("addingExitHelpText").style.display = "none";
-	var newExit = {
-		x : x,
-		y : y,
-		dest : { // start with valid destination so you can't accidentally uncreate exits
-			room : "0",
-			x : 0,
-			y : 0
-		}
+function deleteMarker() {
+	markerTool.RemoveMarker();
+	roomTool.drawEditMap();
+}
+
+function prevMarker() {
+	markerTool.NextMarker();
+	roomTool.drawEditMap();
+}
+
+function nextMarker() {
+	markerTool.PrevMarker();
+	roomTool.drawEditMap();
+}
+
+function toggleMoveMarker1(e) {
+	markerTool.TogglePlacingFirstMarker(e.target.checked);
+}
+
+function cancelMoveMarker1() {
+	markerTool.TogglePlacingFirstMarker(false);
+}
+
+function selectMarkerRoom1() {
+	markerTool.SelectMarkerRoom1();
+}
+
+function toggleMoveMarker2(e) {
+	markerTool.TogglePlacingSecondMarker(e.target.checked);
+}
+
+function cancelMoveMarker2() {
+	markerTool.TogglePlacingSecondMarker(false);
+}
+
+function selectMarkerRoom2() {
+	markerTool.SelectMarkerRoom2();
+}
+
+function changeExitDirection() {
+	markerTool.ChangeExitLink();
+	roomTool.drawEditMap();
+}
+
+function onEndingTextChange(event) {
+	markerTool.ChangeEndingText(event.target.value);
+}
+
+function onEffectTextChange(event) {
+	markerTool.ChangeEffectText(event.target.value);
+}
+
+function showMarkers() {
+	toggleRoomMarkers(true);
+}
+
+function hideMarkers() {
+	toggleRoomMarkers(false);
+}
+
+function toggleRoomMarkers(visible) {
+	if (visible) {
+		markerTool.Refresh();
 	}
-	room[curRoom].exits.push( newExit );
-	refreshGameData();
-	setSelectedExit(newExit);
+	roomTool.areMarkersVisible = visible;
+	roomTool.drawEditMap();
+	document.getElementById("roomMarkersCheck").checked = visible;
+	document.getElementById("roomMarkersIcon").innerHTML = visible ? "visibility" : "visibility_off";
 }
 
-function updateRoomChoiceForSelectedExit() {
-	var destOptions = document.getElementById("exitDestinationSelect").options;
-	for (i in destOptions) {
-		var o = destOptions[i];
-		if (o.value === selectedExitRoom) {
-			o.selected = true;
-		}
-	}
+function onToggleExitOptions() {
+	markerTool.SetExitOptionsVisibility(document.getElementById("showExitOptionsCheck").checked);
 }
 
-function setSelectedExit(e) {
-	// var didChange = selectedExit != e;
-	var didChange = (e != null) || (e == null && selectedExit != null);
+function onChangeExitOptionsSelect(exitSelectId) {
+	markerTool.UpdateExitOptions(exitSelectId);
+}
 
-	selectedExit = e;
+function onChangeExitTransitionEffect(effectId) {
+	markerTool.ChangeExitTransitionEffect(effectId);
+}
 
-	if (selectedExit == null) {
-		document.getElementById("noExitSelected").style.display = "block";
-		document.getElementById("exitSelected").style.display = "none";
+// TODO : put helper method somewhere more.. helpful
+function setElementClass(elementId, classId, addClass) {
+	var el = document.getElementById(elementId);
+	if (addClass) {
+		el.classList.add(classId);
 	}
 	else {
-		document.getElementById("noExitSelected").style.display = "none";
-		document.getElementById("exitSelected").style.display = "block";
-
-		selectedExitRoom = selectedExit.dest.room;
-		updateRoomChoiceForSelectedExit();
-
-		drawExitDestinationRoom();
+		el.classList.remove(classId);
 	}
-
-	roomTool.drawEditMap();
-
-	return didChange;
-}
-
-function deleteSelectedExit() {
-	room[curRoom].exits.splice( room[curRoom].exits.indexOf( selectedExit ), 1 );
-	refreshGameData();
-	setSelectedExit(null);
-}
-
-function exitDestinationRoomChange(event) {
-	var roomId = event.target.value;
-	//selectedExit.dest.room = roomId;
-	selectedExitRoom = roomId;
-	drawExitDestinationRoom();
-}
-
-function drawExitDestinationRoom() {
-	//clear screen
-	console.log(selectedExitRoom);
-	var roomPal = getRoomPal(selectedExitRoom);
-	exit_ctx.fillStyle = "rgb("+getPal(roomPal)[0][0]+","+getPal(roomPal)[0][1]+","+getPal(roomPal)[0][2]+")";
-	exit_ctx.fillRect(0,0,canvas.width,canvas.height);
-
-	//draw map
-	drawRoom( room[selectedExitRoom], exit_ctx );
-
-	//draw grid
-	exit_ctx.fillStyle = getContrastingColor( roomPal );
-	for (var x = 1; x < mapsize; x++) {
-		exit_ctx.fillRect(x*tilesize*scale,0*tilesize*scale,1,mapsize*tilesize*scale);
-	}
-	for (var y = 1; y < mapsize; y++) {
-		exit_ctx.fillRect(0*tilesize*scale,y*tilesize*scale,mapsize*tilesize*scale,1);
-	}
-
-	//draw exits and entrances (TODO: turn this into a function)
-	for( r in room ) {
-		if( r === selectedExitRoom ) {
-			for (i in room[selectedExitRoom].exits) {
-				var e = room[selectedExitRoom].exits[i];
-				exit_ctx.fillStyle = getContrastingColor();
-				exit_ctx.globalAlpha = 0.5;
-				exit_ctx.fillRect(e.x * tilesize * scale, e.y * tilesize * scale, tilesize * scale, tilesize * scale);
-				exit_ctx.strokeStyle = getComplimentingColor();
-				exit_ctx.globalAlpha = 1.0;
-				exit_ctx.strokeRect( (e.x * tilesize * scale) - 1, (e.y * tilesize * scale) - 1, (tilesize * scale) + 2, (tilesize * scale) + 2 );
-			}
-		}
-		else {
-			for (i in room[r].exits) {
-				var e = room[r].exits[i];
-				if (e.dest.room === selectedExitRoom){
-					exit_ctx.fillStyle = getContrastingColor();
-					exit_ctx.globalAlpha = 0.3;
-					exit_ctx.fillRect(e.dest.x * tilesize * scale, e.dest.y * tilesize * scale, tilesize * scale, tilesize * scale);
-					exit_ctx.strokeStyle = getComplimentingColor();
-					exit_ctx.globalAlpha = 0.6;
-					exit_ctx.strokeRect( (e.dest.x * tilesize * scale) - 1, (e.dest.y * tilesize * scale) - 1, (tilesize * scale) + 2, (tilesize * scale) + 2 );
-				}
-			}
-		}
-	}
-
-	//draw exit destination
-	if ( selectedExit && isExitValid(selectedExit) && selectedExit.dest.room === selectedExitRoom ) {
-		exit_ctx.fillStyle = "#ff0";
-		exit_ctx.globalAlpha = 0.9;
-		exit_ctx.fillRect(selectedExit.dest.x * tilesize * scale, selectedExit.dest.y * tilesize * scale, tilesize * scale, tilesize * scale);
-		exit_ctx.globalAlpha = 1;
-	}
-}
-
-var exit_scale = 16;
-function exit_onMouseDown(e) {
-	var off = getOffset(e);
-	var x = Math.floor(off.x / exit_scale);
-	var y = Math.floor(off.y / exit_scale);
-	selectedExit.dest.room = selectedExitRoom;
-	selectedExit.dest.x = x;
-	selectedExit.dest.y = y;
-
-	refreshGameData();
-
-	drawExitDestinationRoom();
+	console.log(el.classList);
 }
 
 function togglePanelAnimated(e) {
@@ -2322,8 +2000,9 @@ function togglePanelCore(id,visible,doUpdatePrefs=true) {
 	afterTogglePanel( id, visible );
 	//save panel preferences
 	// savePanelPref( id, visible );
-	if(doUpdatePrefs)
+	if(doUpdatePrefs) {
 		updatePanelPrefs();
+	}
 }
 
 function togglePanelUI(id,visible) {
@@ -2360,13 +2039,15 @@ function afterTogglePanel(id,visible) {
 }
 
 function afterShowPanel(id) {
-	if (id === "exitsPanel") showExits();
-	if (id === "endingsPanel") showEndings();
+	if (id === "exitsPanel") {
+		showMarkers();
+	}
 }
 
 function afterHidePanel(id) {
-	if (id === "exitsPanel") hideExits();
-	if (id === "endingsPanel") hideEndings();
+	if (id === "exitsPanel") {
+		hideMarkers();
+	}
 }
 
 // DEPRECATED
@@ -2377,10 +2058,10 @@ function savePanelPref(id,visible) {
 }
 
 function updatePanelPrefs() {
-	console.log("UPDATE PREFS");
+	// console.log("UPDATE PREFS");
 
 	var prefs = getPanelPrefs();
-	console.log(prefs);
+	// console.log(prefs);
 
 	var editorContent = document.getElementById("editorContent");
 	var cards = editorContent.getElementsByClassName("panel");
@@ -2399,9 +2080,9 @@ function updatePanelPrefs() {
 		}
 	}
 
-	console.log(prefs);
+	// console.log(prefs);
 	localStorage.panel_prefs = JSON.stringify( prefs );
-	console.log(localStorage.panel_prefs);
+	// console.log(localStorage.panel_prefs);
 }
 
 
@@ -2558,6 +2239,8 @@ function finishRecordingGif(gif) {
 function importGameFromFile(e) {
 	resetGameData();
 
+	console.log("IMPORT START");
+
 	// load file chosen by user
 	var files = e.target.files;
 	var file = files[0];
@@ -2571,6 +2254,8 @@ function importGameFromFile(e) {
 		// change game data & reload everything
 		document.getElementById("bitsy_x2_data").value = gameDataStr;
 		on_bitsy_x2_data_change();
+
+        paintExplorer.Refresh(drawing.type);
 	}
 }
 
@@ -2659,8 +2344,9 @@ function addSpriteAnimation() {
 	else
 		addNewFrameToDrawing( spriteImageId );
 
+	// TODO RENDERER : refresh images
+
 	//refresh data model
-	renderImages();
 	refreshGameData();
 	paintTool.reloadDrawing();
 }
@@ -2679,8 +2365,9 @@ function removeSpriteAnimation() {
 	cacheDrawingAnimation( sprite[drawing.id], spriteImageId );
 	removeDrawingAnimation( spriteImageId );
 
+	// TODO RENDERER : refresh images
+
 	//refresh data model
-	renderImages();
 	refreshGameData();
 	paintTool.reloadDrawing();
 }
@@ -2702,8 +2389,9 @@ function addTileAnimation() {
 	else
 		addNewFrameToDrawing( tileImageId );
 
+	// TODO RENDERER : refresh images
+
 	//refresh data model
-	renderImages();
 	refreshGameData();
 	paintTool.reloadDrawing();
 }
@@ -2722,8 +2410,9 @@ function removeTileAnimation() {
 	cacheDrawingAnimation( tile[drawing.id], tileImageId );
 	removeDrawingAnimation( tileImageId );
 
+	// TODO RENDERER : refresh images
+
 	//refresh data model
-	renderImages();
 	refreshGameData();
 	paintTool.reloadDrawing();
 }
@@ -2746,8 +2435,9 @@ function addItemAnimation() {
 	else
 		addNewFrameToDrawing( itemImageId );
 
+	// TODO RENDERER : refresh images
+
 	//refresh data model
-	renderImages();
 	refreshGameData();
 	paintTool.reloadDrawing();
 }
@@ -2766,15 +2456,17 @@ function removeItemAnimation() {
 	cacheDrawingAnimation( item[drawing.id], itemImageId );
 	removeDrawingAnimation( itemImageId );
 
-	//refresh data model
-	renderImages();
+	// TODO RENDERER : refresh images
+
+	//refresh data model (TODO : these should really be a shared method)
 	refreshGameData();
 	paintTool.reloadDrawing();
 }
 
 function addNewFrameToDrawing(drwId) {
 	// copy first frame data into new frame
-	var firstFrame = imageStore.source[ drwId ][0];
+	var imageSource = renderer.GetImageSource(drwId);
+	var firstFrame = imageSource[0];
 	var newFrame = [];
 	for (var y = 0; y < tilesize; y++) {
 		newFrame.push([]);
@@ -2782,24 +2474,29 @@ function addNewFrameToDrawing(drwId) {
 			newFrame[y].push( firstFrame[y][x] );
 		}
 	}
-	imageStore.source[ drwId ].push( newFrame );
+	imageSource.push( newFrame );
+	renderer.SetImageSource(drwId, imageSource);
 }
 
 function removeDrawingAnimation(drwId) {
-	var oldImageData = imageStore.source[ drwId ].slice(0);
-	imageStore.source[ drwId ] = [ oldImageData[0] ];
+	var imageSource = renderer.GetImageSource(drwId);
+	var oldImageData = imageSource.slice(0);
+	renderer.SetImageSource( drwId, [ oldImageData[0] ] );
 }
 
 // let's us restore the animation during the session if the user wants it back
-function cacheDrawingAnimation(drawing,imageStoreId) {
-	var oldImageData = imageStore.source[ imageStoreId ].slice(0);
+function cacheDrawingAnimation(drawing,sourceId) {
+	var imageSource = renderer.GetImageSource(sourceId);
+	var oldImageData = imageSource.slice(0);
 	drawing.cachedAnimation = [ oldImageData[1] ]; // ah the joys of javascript
 }
 
-function restoreDrawingAnimation(imageStoreId,cachedAnimation) {
+function restoreDrawingAnimation(sourceId,cachedAnimation) {
+	var imageSource = renderer.GetImageSource(sourceId);
 	for (f in cachedAnimation) {
-		imageStore.source[ imageStoreId ].push( cachedAnimation[f] );
+		imageSource.push( cachedAnimation[f] );
 	}
+	renderer.SetImageSource(sourceId, imageSource);
 }
 
 function on_paint_frame1() {
@@ -2825,125 +2522,6 @@ function on_change_color_page() {
 	export_settings.page_color = hex;
 
 	localStorage.export_settings = JSON.stringify( export_settings );
-}
-
-/* ENDINGS */
-var isAddingEnding = false;
-var selectedEndingTile = null;
-
-function hasEndings() {
-	return Object.keys(ending).length > 0;
-}
-
-function on_change_ending() { //todo get rid of these underscore functions uggh
-	var curEndingId = "0"; //default in case no endings have been created yet
-	if ( hasEndings() ) curEndingId = sortedEndingIdList()[endingIndex];
-	ending[ curEndingId ] = document.getElementById("endingText").value;
-	refreshGameData();
-}
-
-function newEnding() {
-	if ( !hasEndings() ) return; //do nothin
-
-	// create new ending and save the data
-	var id = nextEndingId();
-	ending[ id ] = "";
-	refreshGameData();
-
-	// change the UI
-	endingIndex = Object.keys(ending).length - 1;
-	reloadEnding();
-
-	setSelectedEnding(null);
-}
-
-function prevEnding() {
-	// update index
-	endingIndex = (endingIndex - 1);
-	if (endingIndex < 0) endingIndex = Object.keys(ending).length - 1;
-
-	// change the UI
-	reloadEnding();
-
-	setSelectedEnding(null);
-}
-
-function nextEnding() {
-	// update index
-	endingIndex = (endingIndex + 1);
-	if (endingIndex >= Object.keys(ending).length) endingIndex = 0;
-
-	// change the UI
-	reloadEnding();
-
-	setSelectedEnding(null);
-}
-
-function reloadEnding() {
-	if ( !hasEndings() ) return; //do nothin
-	var id = sortedEndingIdList()[ endingIndex ];
-	document.getElementById("endingId").innerHTML = id;
-	document.getElementById("endingText").value = ending[ id ];
-}
-
-function addEnding() {
-	isAddingEnding = true;
-	setSelectedExit(null);
-	setSelectedEnding(null);
-	document.getElementById("addEndingButton").style.display = "none";
-	document.getElementById("addingEndingHelpText").style.display = "block";
-}
-
-function addEndingToCurRoom(x,y) {
-	isAddingEnding = false;
-	document.getElementById("addEndingButton").style.display = "block";
-	document.getElementById("addingEndingHelpText").style.display = "none";
-	var id = sortedEndingIdList()[ endingIndex ];
-	var newEnding = {
-		x : x,
-		y : y,
-		id : id
-	};
-	room[ curRoom ].endings.push( newEnding );
-	refreshGameData();
-	setSelectedEnding( newEnding );
-}
-
-function showEndings() {
-	// resetExitVars(); -- what's this for?
-	roomTool.areEndingsVisible = true;
-	roomTool.drawEditMap();
-}
-
-function hideEndings() {
-	roomTool.areEndingsVisible = false;
-	roomTool.drawEditMap();
-}
-
-function setSelectedEnding(e) { //todo
-	// var didChange = selectedEndingTile != e;
-	var didChange = (e != null) || (e == null && selectedEndingTile != null);
-
-	selectedEndingTile = e;
-
-	if (selectedEndingTile == null) {
-		document.getElementById("removeEndingButton").style.display = "none";
-	}
-	else {
-		endingIndex = sortedEndingIdList().indexOf( e.id );
-		reloadEnding();
-		document.getElementById("removeEndingButton").style.display = "block";
-	}
-
-	roomTool.drawEditMap();
-
-	return didChange;
-}
-
-function removeSelectedEnding() {
-	room[curRoom].endings.splice( room[curRoom].endings.indexOf( selectedEndingTile ), 1 );
-	refreshGameData();
-	setSelectedEnding(null);
 }
 
 function getComplimentingColor(palId) {
@@ -2973,6 +2551,7 @@ function grabCard(e) {
 
 	// e.preventDefault();
 
+	console.log("--- GRAB START");
 	console.log(grabbedPanel.card);
 
 	if (grabbedPanel.card != null) return;
@@ -2983,6 +2562,9 @@ function grabCard(e) {
 	}
 
 	if(grabbedPanel.card == null) return; // couldn't find a panel above the handle - abort!
+
+	console.log(grabbedPanel.card);
+	console.log("--")
 
 	grabbedPanel.size = getElementSize( grabbedPanel.card );
 	var pos = getElementPosition( grabbedPanel.card );
@@ -3012,6 +2594,9 @@ function grabCard(e) {
 function panel_onMouseMove(e) {
 	if (grabbedPanel.card == null) return;
 
+	console.log("-- PANEL MOVE");
+	console.log(grabbedPanel.card);
+
 	grabbedPanel.card.style.left = e.clientX - grabbedPanel.cursorOffset.x + "px";
 	grabbedPanel.card.style.top = e.clientY - grabbedPanel.cursorOffset.y + "px";
 
@@ -3019,20 +2604,47 @@ function panel_onMouseMove(e) {
 	var cardSize = grabbedPanel.size;
 	var cardCenter = { x:cardPos.x+cardSize.x/2, y:cardPos.y+cardSize.y/2 };
 
+	console.log(cardCenter);
+
 	var editorContent = document.getElementById("editorContent");
+	var editorContentWidth = editorContent.getBoundingClientRect().width;
 	var otherCards = editorContent.getElementsByClassName("panel");
+
+	// var cardCollection = editorContent.getElementsByClassName("panel");
+	// var otherCards = [];
+	// for (var i = 0; i < cardCollection.length; i++) {
+	// 	otherCards.push(cardCollection[i]);
+	// }
+	// // console.log(otherCards);
+
+	// // hacky fix for arabic -- need better solution
+	// if (curEditorLanguageCode === "ar") {
+	// 	// otherCards.reverse();
+	// 	cardCenter.x = editorContentWidth - cardCenter.x;
+	// }
+
+	// console.log(cardCenter);
+	// console.log("---");
 
 	for(var j = 0; j < otherCards.length; j++) {
 		var other = otherCards[j];
+		// console.log(other);
 		var otherPos = getElementPosition( other );
 		var otherSize = getElementSize( other );
 		var otherCenter = { x:otherPos.x+otherSize.x/2, y:otherPos.y+otherSize.y/2 };
 
+		// console.log(otherCenter);
+
 		if ( cardCenter.x < otherCenter.x ) {
+			console.log("INSERT " + cardCenter.x + " " + otherCenter.x);
+			console.log(other);
+
 			editorContent.insertBefore( grabbedPanel.shadow, other );
 			break;
 		}
 	}
+
+	console.log("********")
 }
 document.addEventListener("mousemove",panel_onMouseMove);
 
@@ -3060,8 +2672,14 @@ document.addEventListener("mouseup",panel_onMouseUp);
 
 // TODO consolidate these into one function?
 function getElementPosition(e) { /* gets absolute position on page */
+	if (!e.getBoundingClientRect) {
+		console.log("NOOO BOUNDING RECT!!!");
+		return {x:0,y:0};
+	}
+
 	var rect = e.getBoundingClientRect();
 	var pos = {x:rect.left,y:rect.top};
+	// console.log(pos);
 	return pos;
 }
 
@@ -3177,6 +2795,19 @@ function wrapTextSelection(effect) {
 	}
 }
 
+function ConvertNumberStringToArabic(numberString) {
+	var arabicNumerals = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+	var arabicNumberString = "";
+
+	for (var i = 0; i < numberString.length; i++)
+	{
+		arabicNumberString += arabicNumerals[parseInt(numberString[i])];
+	}
+
+	return arabicNumberString;
+}
+
 var DialogBlockUI = function(nodes, num) {
 	var dialogNode = scriptUtils.CreateDialogBlock( nodes );
 
@@ -3198,7 +2829,7 @@ var DialogBlockUI = function(nodes, num) {
 	div.appendChild(topDiv);
 
 	var leftSpan = document.createElement('span');
-	leftSpan.style.float = "left";
+	leftSpan.classList.add('advDialogBlockName');
 	topDiv.appendChild(leftSpan);
 
 	var topIcon = createIconElement("subject");
@@ -3206,7 +2837,11 @@ var DialogBlockUI = function(nodes, num) {
 	leftSpan.appendChild( topIcon );
 
 	var numSpan = document.createElement("span");
-	numSpan.innerText = num + ". ";
+	var numString = "" + num;
+	if (localization.GetLanguage() === "ar") { // arabic
+		numString = ConvertNumberStringToArabic(numString);
+	}
+	numSpan.innerText = numString + ". ";
 	leftSpan.appendChild( numSpan );
 
 	var typeEl = document.createElement("span");
@@ -3217,8 +2852,8 @@ var DialogBlockUI = function(nodes, num) {
 	//
 	var deleteEl = document.createElement("button");
 	deleteEl.appendChild( createIconElement("clear") );
-	deleteEl.style.float = "right";
 	deleteEl.classList.add('light');
+	deleteEl.classList.add('advDialogBlockDelete');
 	var self = this; // hack
 	deleteEl.addEventListener('click', function() {
 		var i = advDialogUIComponents.indexOf(self);
@@ -3252,6 +2887,7 @@ var DialogBlockUI = function(nodes, num) {
 		serializeAdvDialog();
 	}
 	textArea.classList.add('advDialogTextBlock');
+	textArea.classList.add('gameTextDir');
 	textArea.value = dialogNode.Serialize();
 	textArea.addEventListener('change', onChangeDialogBlock);
 	textArea.addEventListener('keyup', onChangeDialogBlock);
@@ -3298,7 +2934,7 @@ var IfBlockUI = function(node, num) {
 	div.appendChild(topDiv);
 
 	var leftSpan = document.createElement('span');
-	leftSpan.style.float = "left";
+	leftSpan.classList.add('advDialogBlockName');
 	topDiv.appendChild(leftSpan);
 
 	var topIcon = createIconElement("call_split");
@@ -3308,7 +2944,11 @@ var IfBlockUI = function(node, num) {
 	// div.appendChild( createIconElement("help_outline") );
 
 	var numSpan = document.createElement("span");
-	numSpan.innerText = num + ". ";
+	var numString = "" + num;
+	if (localization.GetLanguage() === "ar") { // arabic
+		numString = ConvertNumberStringToArabic(numString);
+	}
+	numSpan.innerText = numString + ". ";
 	leftSpan.appendChild( numSpan );
 
 	var typeEl = document.createElement("span");
@@ -3319,8 +2959,8 @@ var IfBlockUI = function(node, num) {
 	//
 	var deleteEl = document.createElement("button");
 	deleteEl.appendChild( createIconElement("clear") );
-	deleteEl.style.float = "right";
 	deleteEl.classList.add('light');
+	deleteEl.classList.add('advDialogBlockDelete');
 	var self = this; // hack
 	deleteEl.addEventListener('click', function() {
 		var i = advDialogUIComponents.indexOf(self);
@@ -3602,6 +3242,7 @@ var IfBlockUI = function(node, num) {
 
 		var textArea = document.createElement("textarea");
 		textArea.classList.add('advDialogTextOption');
+		textArea.classList.add('gameTextDir');
 		textArea.value = result.Serialize();
 		var onChangeResult = createOnChangeResult(index);
 		textArea.addEventListener('change', onChangeResult);
@@ -3674,7 +3315,7 @@ var SeqBlockUI = function(node, num) {
 	div.appendChild(topDiv);
 
 	var leftSpan = document.createElement('span');
-	leftSpan.style.float = "left";
+	leftSpan.classList.add('advDialogBlockName');
 	topDiv.appendChild(leftSpan);
 
 	var topIcon = createIconElement("list");
@@ -3682,7 +3323,11 @@ var SeqBlockUI = function(node, num) {
 	leftSpan.appendChild( topIcon );
 
 	var numSpan = document.createElement("span");
-	numSpan.innerText = num + ". ";
+	var numString = "" + num;
+	if (localization.GetLanguage() === "ar") { // arabic
+		numString = ConvertNumberStringToArabic(numString);
+	}
+	numSpan.innerText = numString + ". ";
 	leftSpan.appendChild( numSpan );
 
 	var typeEl = document.createElement("span");
@@ -3693,8 +3338,8 @@ var SeqBlockUI = function(node, num) {
 	//
 	var deleteEl = document.createElement("button");
 	deleteEl.appendChild( createIconElement("clear") );
-	deleteEl.style.float = "right";
 	deleteEl.classList.add('light');
+	deleteEl.classList.add('advDialogBlockDelete');
 	var self = this; // hack
 	deleteEl.addEventListener('click', function() {
 		var i = advDialogUIComponents.indexOf(self);
@@ -3773,6 +3418,7 @@ var SeqBlockUI = function(node, num) {
 
 		var textArea = document.createElement("textarea");
 		textArea.classList.add('advDialogTextOption');
+		textArea.classList.add('gameTextDir');
 		textArea.value = option.Serialize();
 		// textArea.style.float = "left";
 		var onChangeOption = createOnChangeOption( index );
@@ -3928,7 +3574,7 @@ function serializeAdvDialog() {
 			paintTool.getCurObject().dlg = dialogId;
 		}
 
-		dialog[dialogId] = dialogStr; //TODO: do I need to do more here?
+		dialog[dialogId] = dialogStr;
 	}
 
 	reloadDialogUICore();
@@ -4049,7 +3695,7 @@ function showDialogToolsEffects() {
 
 /* INVENTORY UI */
 function updateInventoryUI() {
-	console.log("~~~ UPDATE INVENTORY ~~~");
+	// console.log("~~~ UPDATE INVENTORY ~~~");
 	updateInventoryItemUI();
 	updateInventoryVariableUI();
 }
@@ -4071,12 +3717,13 @@ function updateInventoryItemUI(){
 		}
 	}
 
-	console.log("UPDATE!!!!");
+	// console.log("UPDATE!!!!");
+	var itemLabel = localization.GetStringOrFallback("item_label", "item");
 	for(id in item) {
-		var itemName = item[id].name != null ? item[id].name : "item " + id;
-		console.log( id );
-		console.log( player() );
-		console.log( player().inventory );
+		var itemName = item[id].name != null ? item[id].name : itemLabel + " " + id;
+		// console.log( id );
+		// console.log( player() );
+		// console.log( player().inventory );
 		var itemCount = player().inventory[id] != undefined ? parseFloat( player().inventory[id] ) : 0;
 
 		var itemDiv = document.createElement("div");
@@ -4229,6 +3876,7 @@ function updateInventoryVariableUI(){
 		addVarEl.appendChild( createIconElement("add") );
 		var addVarText = document.createElement("span");
 		addVarText.innerText = localization.GetStringOrFallback("variable_add", "add variable");
+		console.log("CREATE ADD BUTTON " + addVarText.innerText);
 		addVarEl.appendChild( addVarText );
 		addVarEl.addEventListener('click', function() {
 			viewport.removeChild(addVarEl);
@@ -4249,16 +3897,6 @@ function showInventoryVariable() {
 	document.getElementById("inventoryItem").style.display = "none";
 	document.getElementById("inventoryVariable").style.display = "block";
 }
-
-// function previewDialog() {
-// 	console.log("PREVIEW!");
-// 	var dialogId = getCurDialogId();
-// 	var dialogStr = dialog[dialogId];
-// 	on_play_mode();
-// 	updatePlayModeButton();
-// 	startNarrating( dialogStr );
-// 	// load_game(document.getElementById("bitsy_x2_data").value);
-// }
 
 var isPreviewDialogMode = false;
 var previewDialogScriptTree = null;
@@ -4303,8 +3941,18 @@ function chooseExportSizeFixed() {
 // LOCALIZATION
 var localization;
 function on_change_language(e) {
-	localization.ChangeLanguage(e.target.value);
-	pickDefaultFontForLanguage(e.target.value);
+	var language = e.target.value;
+	pickDefaultFontForLanguage(language);
+	on_change_language_inner(language);
+}
+
+function on_change_language_inner(language) {
+	changeLnaguageStyle(language); // TODO : misspelled funciton name
+
+	localization.ChangeLanguage(language);
+	updateInventoryUI();
+	reloadDialogUI();
+	hackyUpdatePlaceholderText();
 
 	// update title in new language IF the user hasn't made any changes to the default title
 	if (localization.LocalizationContains("default_title", title)) {
@@ -4312,16 +3960,52 @@ function on_change_language(e) {
 		title = localization.GetStringOrFallback("default_title", "Write your game's title here");
 		document.getElementById("titleText").value = title;
 	}
+
+	// update default sprite
+	var defaultSpriteDlgExists = dialog["SPR_0"] != null && localization.LocalizationContains("default_sprite_dlg", dialog["SPR_0"]);
+	if (defaultSpriteDlgExists) {
+		dialog["SPR_0"] = localization.GetStringOrFallback("default_sprite_dlg", "I'm a cat");
+		paintTool.reloadDrawing();
+	}
+
+	// update default item
+	var defaultItemDlgExists = dialog["ITM_0"] != null && localization.LocalizationContains("default_item_dlg", dialog["ITM_0"]);
+	if (defaultItemDlgExists) {
+		dialog["ITM_0"] = localization.GetStringOrFallback("default_item_dlg", "You found a nice warm cup of tea");
+		paintTool.reloadDrawing(); // hacky to do this twice
+	}
+
 	refreshGameData();
+}
+
+// TODO : create a system for placeholder text like I have for innerText
+function hackyUpdatePlaceholderText() {
+	var titlePlaceholder = localization.GetStringOrFallback("title_placeholder", "Title");
+	document.getElementById("titleText").placeholder = titlePlaceholder;
+	var filterPlaceholder = localization.GetStringOrFallback("filter_placeholder", "filter drawings");
+	document.getElementById("paintExplorerFilterInput").placeholder = filterPlaceholder;
+}
+
+var curEditorLanguageCode = "en";
+function changeLnaguageStyle(newCode) { // TODO : fix function name
+	document.body.classList.remove("lang_" + curEditorLanguageCode);
+	curEditorLanguageCode = newCode;
+	document.body.classList.add("lang_" + curEditorLanguageCode);
 }
 
 function pickDefaultFontForLanguage(lang) {
 	// TODO : switch to asian characters when we get asian language translations of editor
 	if (lang === "en") {
-		switchFont("ascii_small");
+		switchFont("ascii_small", true /*doPickTextDirection*/);
+	}
+	else if (lang === "ar") {
+		switchFont("arabic", true /*doPickTextDirection*/);
+	}
+	else if (lang === "zh") {
+		switchFont("unicode_asian", true /*doPickTextDirection*/);
 	}
 	else {
-		switchFont("unicode_european_small");
+		switchFont("unicode_european_small", true /*doPickTextDirection*/);
 	}
 	updateFontSelectUI();
 	resetMissingCharacterWarning();
@@ -4329,27 +4013,37 @@ function pickDefaultFontForLanguage(lang) {
 
 function on_change_font(e) {
 	if (e.target.value != "custom") {
-		switchFont(e.target.value);
+		switchFont(e.target.value, true /*doPickTextDirection*/);
 	}
 	else {
 		if (localStorage.custom_font != null) {
 			var fontStorage = JSON.parse(localStorage.custom_font);
-			switchFont(fontStorage.name);
+			switchFont(fontStorage.name, true /*doPickTextDirection*/);
 		}
 		else {
 			// fallback
-			switchFont("ascii_small");
+			switchFont("ascii_small", true /*doPickTextDirection*/);
 		}
 	}
 	updateFontDescriptionUI();
+	// updateEditorTextDirection();
 	resetMissingCharacterWarning();
 }
 
-function switchFont(newFontName) {
+function switchFont(newFontName, doPickTextDirection) {
+	if (doPickTextDirection === undefined || doPickTextDirection === null) {
+		doPickTextDirection = false;
+	}
+
 	fontName = newFontName;
 
 	// hacky - move the font data from the editor to the engine
 	fontManager.AddResource(fontName + fontManager.GetExtension(), editorFontManager.GetData(fontName));
+
+	if (doPickTextDirection) {
+		console.log("PICK TEXT DIR");
+		pickDefaultTextDirectionForFont(newFontName);
+	}
 
 	refreshGameData()
 }
@@ -4367,6 +4061,44 @@ function initLanguageOptions() {
 		option.value = languageList[i].id;
 		option.selected = languageList[i].id === localization.GetLanguage();
 		languageSelect.add(option);
+	}
+
+	// is this doing duplicate work??
+	on_change_language_inner( localization.GetLanguage() );
+}
+
+function on_change_text_direction(e) {
+	console.log("CHANGE TEXT DIR " + e.target.value);
+	updateEditorTextDirection(e.target.value);
+	refreshGameData();
+}
+
+function pickDefaultTextDirectionForFont(newFontName) {
+	var newTextDirection = TextDirection.LeftToRight;
+	if (newFontName === "arabic") {
+		newTextDirection = TextDirection.RightToLeft;
+	}
+	updateEditorTextDirection(newTextDirection);
+	updateTextDirectionSelectUI();
+}
+
+function updateEditorTextDirection(newTextDirection) {
+	var prevTextDirection = textDirection;
+	textDirection = newTextDirection;
+
+	console.log("TEXT BOX TEXT DIR " + textDirection);
+
+	if (prevTextDirection != null) {
+		document.body.classList.remove("dir_" + prevTextDirection.toLowerCase());
+	}
+	document.body.classList.add("dir_" + textDirection.toLowerCase());
+}
+
+function updateTextDirectionSelectUI() {
+	var textDirSelect = document.getElementById("textDirectionSelect");
+	for (var i in textDirSelect.options) {
+		var option = textDirSelect.options[i];
+		option.selected = (option.value === textDirection);
 	}
 }
 

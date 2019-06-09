@@ -1,3 +1,50 @@
+6.0:
+- new combined exits & endings tool!
+- exits are two-way by default
+- change exit direction with one button
+- new exit transition animations!
+- exit thumbnails are shortcut to rooms
+- toggle exits & endings visibility
+- move exits & endings in room without tool open
+- move exits & endings in two ways:
+-- click and drag in the room
+-- OR use the "move" button
+- updated translations for several languages
+
+5.5:
+- editor translated into Arabic, Chinese, and Polish
+***** shout outs to the translators! *****
+Ahmed Khalifa (Arabic)
+Ray Song (Chinese)
+Mateusz Teklak (Polish)
+******************************************
+- new Arabic pixel font
+- right to left text
+- bitsyfont supports variable-width fonts
+
+
+5.4:
+- editor translated into Esperanto, Estonian, Hungarian, Icelandic, Russian
+***** thank you translators!!!! :) *****
+Ariel J Moody (Esperanto)
+Raul (Estonian)
+Ádám Török (Hungarian)
+Game Makers Iceland (Icelandic)
+Vinvirinvi & Onion (Russian)
+****************************************
+- link to updated Bitsy tutorial by Claire Morley
+- added link to "games made with Bitsy" on itch.io
+
+5.3:
+- performance improvements:
+-- speed up game loading time with new renderer
+-- improve editor responsiveness by only loading thumbnails when needed
+
+5.2:
+- {say} function re-enabled
+- fix weird scrolling in mobile
+- default game loads correctly
+
 5.1:
 - perf improvement: hide font data in game data by default
 --- added toggle button to show/hide font data

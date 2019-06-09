@@ -70,6 +70,10 @@ function nextPaletteId() {
 }
 
 function nextObjectId(idList) {
+	if (idList.length <= 0) {
+		return "0";
+	}
+
 	var lastId = idList[ idList.length - 1 ];
 	var idInt = parseInt( lastId, 36 );
 	idInt++;
@@ -115,6 +119,48 @@ function nextAvailableDialogId(prefix) {
 	return id;
 }
 
+/* NEW HEX ID SYSTEM HELPERS */
+// TODO : vNext
+// function nextScriptHexId() {
+// 	return nextObjectHexId( sortedScriptHexIdList() );
+// }
+
+// function sortedScriptHexIdList() {
+// 	return sortedHexIdList( script );
+// }
+
+function nextObjectHexId(idList) {
+	if (idList.length <= 0) {
+		return "0";
+	}
+
+	var lastId = idList[ idList.length - 1 ];
+	var idInt = safeParseHex(lastId);
+	idInt++;
+	return idInt.toString(16);
+}
+
+function sortedHexIdList(objHolder) {
+	var objectKeys = Object.keys(objHolder);
+
+	var hexSortFunc = function(key1,key2) {
+		return safeParseHex(key1,16) - safeParseHex(key2,16);
+	};
+	var hexSortedIds = objectKeys.sort(hexSortFunc);
+
+	return hexSortedIds;
+}
+
+function safeParseHex(str) {
+	var hexInt = parseInt(str,16);
+	if (hexInt == undefined || hexInt == null || isNaN(hexInt)) {
+		return -1;
+	}
+	else {
+		return hexInt;
+	}
+}
+
 /* UTILS */
 function getContrastingColor(palId) {
 	if (!palId) palId = curPal();
@@ -145,6 +191,7 @@ function findAndReplaceTileInAllRooms( findTile, replaceTile ) {
 function makeTile(id,imageData) {
 	var drwId = "TIL_" + id;
 	tile[id] = {
+		id : id,
 		drw : drwId,
 		col : 1,
 		animation : { //todo
@@ -160,6 +207,7 @@ function makeTile(id,imageData) {
 function makeSprite(id,imageData) {
 	var drwId = "SPR_" + id;
 	sprite[id] = { //todo create default sprite creation method
+		id : id,
 		drw : drwId,
 		col : 2,
 		room : null,
@@ -181,6 +229,7 @@ function makeItem(id,imageData) { // NOTE : same as tile right now? make more li
 	var drwId = "ITM_" + id;
 	// console.log(drwId);
 	item[id] = {
+		id : id,
 		drw : drwId,
 		col : 2, // TODO color not column (bad name)
 		animation : { //todo
@@ -215,8 +264,9 @@ function makeDrawing(id,imageData) {
 			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		]];
 	}
-	imageStore.source[id] = imageData;
-	renderImages(); //todo is this the right place for this?
+	// TODO RENDERER : stop using global renderer
+	renderer.SetImageSource(id,imageData);
+	// TODO RENDERER : re-render images?
 }
 
 /* EVENTS */
@@ -283,21 +333,9 @@ function reloadDialogUICore() { // TODO: name is terrible
 	var dialogId = getCurDialogId(); // hacky
 
 	if (dialogId in dialog) {
-		var dialogLines = dialog[dialogId].split("\n");
-		if(dialogLines[0] === '"""') {
-			// multi line
-			var dialogStr = "";
-			var i = 1;
-			while (i < dialogLines.length && dialogLines[i] != '"""') {
-				dialogStr += dialogLines[i] + (dialogLines[i+1] != '"""' ? '\n' : '');
-				i++;
-			}
-			document.getElementById("dialogText").value = dialogStr;
-		}
-		else {
-			// single line
-			document.getElementById("dialogText").value = dialog[dialogId];
-		}
+		var dialogSource = dialog[dialogId];
+		var dialogStr = scriptUtils.RemoveDialogBlockFormat(dialogSource);
+		document.getElementById("dialogText").value = dialogStr;
 	}
 	else {
 		document.getElementById("dialogText").value = "";
@@ -331,8 +369,7 @@ function on_change_dialog() {
 			dialogId = nextAvailableDialogId( prefix );
 			paintTool.getCurObject().dlg = dialogId;
 		}
-		if( dialogStr.indexOf('\n') > -1 ) dialogStr = '"""\n' + dialogStr + '\n"""';
-		dialog[dialogId] = dialogStr;
+		dialog[dialogId] = scriptUtils.EnsureDialogBlockFormat(dialogStr);
 	}
 
 	if( Ed().platform == PlatformType.Desktop )
@@ -449,21 +486,22 @@ function createDefaultGameStateFunction() {
 		parseWorld(document.getElementById("bitsy_x2_data").value); // load game
 	}
 }
-var setDefaultGameState = createDefaultGameStateFunction();
 
 function newGameDialog() {
-	if ( Ed().platform == PlatformType.Mobile ||
-			confirm("Starting a new game will erase your old data. Consider exporting your work first! Are you sure you want to start over?") )
+	var resetMessage = localization.GetStringOrFallback("reset_game_message", "Starting a new game will erase your old data. Consider exporting your work first! Are you sure you want to start over?");
+	if ( Ed().platform == PlatformType.Mobile || confirm(resetMessage) )
 	{
 		resetGameData();
 	}
 }
 
 function resetGameData() {
-	setDefaultGameState();
+	//setDefaultGameState(); todo needs porting from bitsy
 
 	// TODO : localize default_title
 	title = localization.GetStringOrFallback("default_title", "Write your game's title here");
+	dialog["SPR_0"] = localization.GetStringOrFallback("default_sprite_dlg", "I'm a cat"); // hacky to do this in two places :(
+	dialog["ITM_0"] = localization.GetStringOrFallback("default_item_dlg", "You found a nice warm cup of tea");
 
 	pickDefaultFontForLanguage(localization.GetLanguage());
 
@@ -472,7 +510,8 @@ function resetGameData() {
 	spriteIndex = 0;
 
 	refreshGameData();
-	renderImages();
+
+	// TODO RENDERER : refresh images
 
 	if ( Ed().platform == PlatformType.Desktop ) {
 		updatePaletteUI();
@@ -487,14 +526,17 @@ function resetGameData() {
 	}
 
 	paintTool.updateCanvas(); // hacky - assumes global paintTool and roomTool
+	markerTool.SetRoom("0");
+	markerTool.Refresh();
 	roomTool.drawEditMap();
 
 	document.getElementById("titleText").value = title;
 }
 
 function refreshGameData() {
-	if( Ed().platform == PlatformType.Desktop )
+	if( Ed().platform == PlatformType.Desktop ) {
 		if (isPlayMode) return; //never store game data while in playmode (TODO: wouldn't be necessary if the game data was decoupled form editor data)
+	}
 
 	flags.ROOM_FORMAT = 1; // always save out comma separated format, even if the old format is read in
 
@@ -508,4 +550,17 @@ function refreshGameData() {
 	// localStorage.setItem("bitsy_x2_data", gameData); //auto-save
 
 	localStorage.setItem("bitsy_x2_data", gameDataNoFonts);
+}
+
+/* TIMER */
+function Timer() {
+	var start = Date.now();
+
+	this.Seconds = function() {
+		return Math.floor( (Date.now() - start) / 1000 );
+	}
+
+	this.Milliseconds = function() {
+		return Date.now() - start;
+	}
 }
